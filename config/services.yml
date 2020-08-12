@@ -1,0 +1,42 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: false
+
+    Terminal42\Geoip2CountryBundle\CountryProvider:
+        arguments:
+            - !service
+                class: GeoIp2\Database\Reader
+                arguments:
+                    - '%terminal42_geoip2_country.database_path%'
+            - ~ # Argument is defined by bundle extension
+
+    Terminal42\Geoip2CountryBundle\EventListener\KernelResponseListener:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+        tags:
+            - { name: kernel.event_listener }
+
+    Terminal42\Geoip2CountryBundle\EventListener\DcaLoaderListener:
+        arguments:
+            - [] # Argument is defined by bundle extension
+        tags:
+            - { name: contao.hook, hook: loadDataContainer }
+
+    Terminal42\Geoip2CountryBundle\EventListener\NavigationTemplateListener:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+            - '@request_stack'
+        tags:
+            - { name: contao.hook, hook: parseTemplate }
+
+    Terminal42\Geoip2CountryBundle\EventListener\VisibleElementListener:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+            - '@request_stack'
+        tags:
+            - { name: contao.hook, hook: isVisibleElement }
+
+    Terminal42\Geoip2CountryBundle\Routing\CountryRestrictionFilter:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'

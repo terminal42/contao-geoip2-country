@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="contao/languages/en/tl_article.php" source-language="en">
+        <body>
+            <trans-unit id="tl_article.geoip_visibility.0">
+                <source>IP Geolocation</source>
+            </trans-unit>
+            <trans-unit id="tl_article.geoip_visibility.1">
+                <source>Show or hide this page for visitors from certain countries.</source>
+            </trans-unit>
+            <trans-unit id="tl_article.geoip_countries.0">
+                <source>Countries</source>
+            </trans-unit>
+            <trans-unit id="tl_article.geoip_countries.1">
+                <source>Select one or multiple countries to allow/deny seeing this page.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
