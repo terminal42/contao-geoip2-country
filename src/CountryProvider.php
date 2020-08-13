@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle;
 
+use Contao\CoreBundle\EventListener\MakeResponsePrivateListener;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
@@ -60,6 +61,7 @@ class CountryProvider
         }
 
         $response->setPrivate();
+        $response->headers->set(MakeResponsePrivateListener::DEBUG_HEADER, 'GeoIP2-Country='.$this->requestCountries[$hash]);
     }
 
     /**
