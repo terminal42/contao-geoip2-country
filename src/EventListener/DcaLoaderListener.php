@@ -5,24 +5,36 @@ declare(strict_types=1);
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\DataContainer;
 use Contao\System;
+use Doctrine\DBAL\Connection;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DcaLoaderListener
 {
+    private Connection $connection;
+    private TranslatorInterface $translator;
     private array $supportedTables;
 
-    public function __construct(array $supportedTables)
+    public function __construct(Connection $connection, TranslatorInterface $translator, array $supportedTables)
     {
+        $this->connection = $connection;
+        $this->translator = $translator;
         $this->supportedTables = $supportedTables;
     }
 
     public function __invoke(string $table): void
     {
-        if (!\in_array($table, $this->supportedTables, true)) {
-            return;
+        if (\in_array($table, $this->supportedTables, true)) {
+            $this->addFieldsToDCA($table);
         }
 
-        $this->addFieldsToDCA($table);
+        if (
+            4 === (int) ($GLOBALS['TL_DCA'][$table]['list']['sorting']['mode'] ?? 0)
+            && \in_array($GLOBALS['TL_DCA'][$table]['config']['ptable'] ?? '', $this->supportedTables, true)
+        ) {
+            $this->addHeaderInformation($table);
+        }
     }
 
     private function addFieldsToDCA(string $table): void
@@ -77,21 +89,46 @@ class DcaLoaderListener
             case 1:
             case 2:
             case 3:
-                $this->overrideListView($table);
+                $this->addFlagsToListView($table);
                 break;
 
             case 4:
-                $this->overrideParentViewLabel($table);
+                $this->addFlagsToParentView($table);
                 break;
 
             case 5:
             case 6:
-                $this->overrideTreeViewLabel($table);
+                $this->addFlagsToTreeView($table);
                 break;
         }
     }
 
-    private function overrideListView(string $table): void
+    private function addHeaderInformation(string $table): void
+    {
+        $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'];
+
+        $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] = function (array $header, DataContainer $dc) use ($previous, $table): array {
+            $ptable = $GLOBALS['TL_DCA'][$table]['config']['ptable'];
+            $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=".$dc->id);
+
+            if (!$this->hasVisibility($parent)) {
+                return $header;
+            }
+
+            $data = $this->callPrevious($previous, \func_get_args());
+            if (\is_array($data)) {
+                $header = $data;
+            }
+
+            $label = $this->translator->trans($ptable.'.geoip_visibility.0', [], 'contao_'.$ptable);
+            $countries = explode(',', $parent['geoip_countries']);
+            $header[$label] = '<span style="color:#C00;font-weight:bold">'.$this->getLabelForCountries($parent['geoip_visibility'], $countries).'</span>';
+
+            return $header;
+        };
+    }
+
+    private function addFlagsToListView(string $table): void
     {
         $previous = $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'];
 
@@ -106,7 +143,7 @@ class DcaLoaderListener
         };
     }
 
-    private function overrideParentViewLabel(string $table): void
+    private function addFlagsToParentView(string $table): void
     {
         $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['child_record_callback'];
 
@@ -117,7 +154,7 @@ class DcaLoaderListener
         };
     }
 
-    private function overrideTreeViewLabel(string $table): void
+    private function addFlagsToTreeView(string $table): void
     {
         $previous = $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'];
 
@@ -143,7 +180,7 @@ class DcaLoaderListener
 
     private function generateFlags(array $row): string
     {
-        if (!isset($row['geoip_visibility']) || ('show' !== $row['geoip_visibility'] && 'hide' !== $row['geoip_visibility'])) {
+        if (!$this->hasVisibility($row)) {
             return '';
         }
 
@@ -151,10 +188,9 @@ class DcaLoaderListener
         $color = 'show' === $row['geoip_visibility'] ? '#b2f986' : '#ff89bf';
 
         $buffer = sprintf(
-            '<span style="all:unset;display:inline-flex;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px" title="%s %s">',
+            '<span style="all:unset;display:inline-flex;margin-left:5px;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px" title="%s">',
             $color,
-            'show' === $row['geoip_visibility'] ? 'Only visible for' : 'Hidden for',
-            implode(', ', array_intersect_key(System::getCountries(), array_flip($countries)))
+            $this->getLabelForCountries($row['geoip_visibility'], $countries)
         );
 
         foreach ($countries as $country) {
@@ -165,5 +201,19 @@ class DcaLoaderListener
         }
 
         return $buffer.'</span>';
+    }
+
+    private function hasVisibility(array $row): bool
+    {
+        return isset($row['geoip_visibility']) && ('show' === $row['geoip_visibility'] || 'hide' === $row['geoip_visibility']);
+    }
+
+    private function getLabelForCountries(string $visibility, array $countries): string
+    {
+        return $this->translator->trans(
+            'MSC.geoip_visibility.'.$visibility.'_for',
+            [implode(', ', array_intersect_key(System::getCountries(), array_flip($countries)))],
+            'contao_default'
+        );
     }
 }

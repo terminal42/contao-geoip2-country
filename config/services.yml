@@ -19,6 +19,8 @@ services:
 
     Terminal42\Geoip2CountryBundle\EventListener\DcaLoaderListener:
         arguments:
+            - '@database_connection'
+            - '@translator'
             - [] # Argument is defined by bundle extension
         tags:
             - { name: contao.hook, hook: loadDataContainer }
