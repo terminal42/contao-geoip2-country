@@ -1,6 +1,6 @@
 {
     "name": "terminal42/contao-geoip2-country",
-    "description": "Detect country of visitor and protect elements in Contao",
+    "description": "Detect country of visitor and protect elements in Contao using MaxMind GeoIP2 database",
     "keywords": ["maxmind", "geoip", "country", "protect", "access"],
     "type": "contao-bundle",
     "license": "MIT",
