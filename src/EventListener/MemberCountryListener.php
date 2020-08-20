@@ -1,14 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
-use Contao\Widget;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
-class FormCountrySelectListener
+class MemberCountryListener
 {
     private CountryProvider $countryProvider;
     private RequestStack $requestStack;
@@ -19,14 +16,18 @@ class FormCountrySelectListener
         $this->requestStack = $requestStack;
     }
 
-    public function __invoke(Widget $widget)
+    public function __invoke(string $table)
     {
-        $request = $this->requestStack->getMasterRequest();
-
-        if ('countryselect' === $widget->type && null !== $request && $request->isMethodCacheable()) {
-            $widget->value = strtolower($this->countryProvider->getCountryCode($request));
+        if ('tl_member' !== $table) {
+            return;
         }
 
-        return $widget;
+        $request = $this->requestStack->getMasterRequest();
+
+        if (null === $request) {
+            return;
+        }
+
+        $GLOBALS['TL_DCA']['tl_member']['fields']['country']['default'] = strtolower($this->countryProvider->getCountryCode($request));
     }
 }

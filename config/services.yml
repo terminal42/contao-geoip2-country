@@ -32,6 +32,13 @@ services:
         tags:
             - { name: contao.hook, hook: loadDataContainer }
 
+    Terminal42\Geoip2CountryBundle\EventListener\MemberCountryListener:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+            - '@request_stack'
+        tags:
+            - { name: contao.hook, hook: loadDataContainer }
+
     Terminal42\Geoip2CountryBundle\EventListener\NavigationTemplateListener:
         arguments:
             - '@Terminal42\Geoip2CountryBundle\CountryProvider'
