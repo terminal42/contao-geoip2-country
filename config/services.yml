@@ -11,6 +11,13 @@ services:
                     - '%terminal42_geoip2_country.database_path%'
             - ~ # Argument is defined by bundle extension
 
+    Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+            - '@request_stack'
+        tags:
+            - { name: contao.hook, hook: loadFormField }
+
     Terminal42\Geoip2CountryBundle\EventListener\KernelResponseListener:
         arguments:
             - '@Terminal42\Geoip2CountryBundle\CountryProvider'

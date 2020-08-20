@@ -22,6 +22,10 @@ need a commercial license of this product depending on your use case!
 
    This will be automatically configured for you in a Contao Managed Edition.
 
+3. **Support for `terminal42/contao-countryselect`**<br>
+   If the `countryselect` form field is added to a form, the default option is automatically
+   set to the visitors country.
+
 
 ## Installation
 
