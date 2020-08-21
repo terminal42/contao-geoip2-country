@@ -6,6 +6,7 @@ namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
+use Contao\Input;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -107,9 +108,19 @@ class DcaLoaderListener
     {
         $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'];
 
-        $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] = function (array $header, DataContainer $dc) use ($previous, $table): array {
+        $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] = function (array $header) use ($previous, $table): array {
+            $act = (string) Input::get('act');
             $ptable = $GLOBALS['TL_DCA'][$table]['config']['ptable'];
-            $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=".$dc->id);
+
+            if ('' === $act || 'select' === $act || ('paste' === $act && 'create' === Input::get('mode'))) {
+                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=?", [(int)Input::get('id')]);
+            } elseif ('paste' === $act) {
+                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=(SELECT pid FROM $table WHERE id=?)", [(int)Input::get('id')]);
+            }
+
+            if (!$parent) {
+                return $header;
+            }
 
             if (!$this->hasVisibility($parent)) {
                 return $header;
