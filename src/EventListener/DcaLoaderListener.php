@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
-use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use Doctrine\DBAL\Connection;
@@ -113,9 +112,9 @@ class DcaLoaderListener
             $ptable = $GLOBALS['TL_DCA'][$table]['config']['ptable'];
 
             if ('' === $act || 'select' === $act || ('paste' === $act && 'create' === Input::get('mode'))) {
-                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=?", [(int)Input::get('id')]);
+                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=?", [(int) Input::get('id')]);
             } elseif ('paste' === $act) {
-                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=(SELECT pid FROM $table WHERE id=?)", [(int)Input::get('id')]);
+                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=(SELECT pid FROM $table WHERE id=?)", [(int) Input::get('id')]);
             }
 
             if (!$parent) {
@@ -127,6 +126,7 @@ class DcaLoaderListener
             }
 
             $data = $this->callPrevious($previous, \func_get_args());
+
             if (\is_array($data)) {
                 $header = $data;
             }

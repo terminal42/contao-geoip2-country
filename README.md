@@ -55,7 +55,8 @@ Then, update the database via the `contao:migrate` command or the Contao install
 
 #### HTTP Reverse Proxy
 
-If you do not use the Contao Managed Edition
+If you do not use the Contao Managed Edition, you can manually register the CacheHeaderSubscriber when using
+the Symfony Reverse Proxy including `friendsofsymfony/http-cache`.
 
 
 ## Configuration
@@ -79,11 +80,11 @@ terminal42_geoip2_country:
     Be aware that this setting does not apply to the HTTP Reverse Proxy!
 
 - **fallback_country:** The default country if a visitors IP cannot be detected (e.g. applies to localhost as well).
-    _XX_ is the UN standard for _unknown country_, but by entering a valid
-    [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) unknown visitors might see a specific content.
+    _XX_ is the United Nations standard for _unknown country_, but by entering a valid
+    [ISO 3166-1 alpha-2 code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) unknown visitors will see a specific content.
 
 - **dca_tables:** configures which elements allow the country restrictions. Changing this will add the DCA fields to the
-    given table(s), but you might need to implement your own visibility checks!
+    given table(s), but for any but the default tables you will need to implement your own visibility checks!
 
 
 ## Updating the MaxMind GeoIP2 database

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -16,7 +18,7 @@ class MemberCountryListener
         $this->requestStack = $requestStack;
     }
 
-    public function __invoke(string $table)
+    public function __invoke(string $table): void
     {
         if ('tl_member' !== $table) {
             return;

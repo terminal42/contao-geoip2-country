@@ -61,7 +61,7 @@ class CountryProvider
         }
 
         $response->setPrivate();
-        $response->headers->set(MakeResponsePrivateListener::DEBUG_HEADER, 'GeoIP2-Country='.$this->requestCountries[$hash]);
+        $response->headers->set(MakeResponsePrivateListener::DEBUG_HEADER, CacheHeaderSubscriber::HEADER_NAME.'='.$this->requestCountries[$hash]);
     }
 
     /**

@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CacheHeaderSubscriber implements EventSubscriberInterface
 {
-    public const HEADER_NAME = 'Geoip2-Country';
+    public const HEADER_NAME = 'GeoIP2-Country';
 
     private Reader $reader;
 
