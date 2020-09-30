@@ -26,11 +26,15 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
 
         try {
-            $request->headers->set(
-                self::HEADER_NAME,
-                $this->reader->country($request->getClientIp())->country->isoCode,
-                true
-            );
+            $country = $this->reader->country($request->getClientIp())->country->isoCode;
+
+            if ($country) {
+                $request->headers->set(
+                    self::HEADER_NAME,
+                    $country,
+                    true
+                );
+            }
         } catch (AddressNotFoundException $exception) {
             // Ignore unknown address and do not set header
         }

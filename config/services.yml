@@ -9,7 +9,7 @@ services:
                 class: GeoIp2\Database\Reader
                 arguments:
                     - '%terminal42_geoip2_country.database_path%'
-            - ~ # Argument is defined by bundle extension
+            - XX # Argument is defined by bundle extension
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
         arguments:

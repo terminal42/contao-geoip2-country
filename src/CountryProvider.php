@@ -18,7 +18,7 @@ class CountryProvider
     private ?string $fallbackCountry;
     private array $requestCountries = [];
 
-    public function __construct(Reader $reader, string $fallbackCountry = null)
+    public function __construct(Reader $reader, string $fallbackCountry = 'XX')
     {
         $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;
@@ -75,12 +75,8 @@ class CountryProvider
         }
 
         try {
-            return $this->reader->country($request->getClientIp())->country->isoCode;
+            return $this->reader->country($request->getClientIp())->country->isoCode ?: $this->fallbackCountry;
         } catch (AddressNotFoundException $exception) {
-            if (null === $this->fallbackCountry) {
-                throw $exception;
-            }
-
             return $this->fallbackCountry;
         }
     }
