@@ -9,7 +9,7 @@ services:
                 class: GeoIp2\Database\Reader
                 arguments:
                     - '%terminal42_geoip2_country.database_path%'
-            - XX # Argument is defined by bundle extension
+            - '%terminal42_geoip2_country.fallback_country%'
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
         arguments:
@@ -28,7 +28,7 @@ services:
         arguments:
             - '@database_connection'
             - '@translator'
-            - [] # Argument is defined by bundle extension
+            - '%terminal42_geoip2_country.dca_tables%'
         tags:
             - { name: contao.hook, hook: loadDataContainer }
 

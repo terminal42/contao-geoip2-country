@@ -21,8 +21,8 @@ class Terminal42Geoip2CountryExtension extends Extension
 
         $loader->load('services.yml');
 
-        $container->getDefinition(CountryProvider::class)->setArgument(1, $config['fallback_country']);
-        $container->getDefinition(DcaLoaderListener::class)->setArgument(2, $config['dca_tables']);
+        $container->setParameter('terminal42_geoip2_country.fallback_country', $config['fallback_country']);
+        $container->setParameter('terminal42_geoip2_country.dca_tables', $config['dca_tables']);
         $container->setParameter('terminal42_geoip2_country.database_path', $config['database_path']);
     }
 }
