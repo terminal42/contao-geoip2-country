@@ -14,6 +14,8 @@ use Terminal42\Geoip2CountryBundle\HttpKernel\CacheHeaderSubscriber;
 
 class CountryProvider
 {
+    public const SESSION_KEY = 'geoip2_country';
+
     private Reader $reader;
     private ?string $fallbackCountry;
     private array $requestCountries = [];
@@ -30,6 +32,12 @@ class CountryProvider
      */
     public function getCountryCode(Request $request, bool $trackRequest = true): string
     {
+        if ($request->hasPreviousSession()
+            && null !== ($sessionCountry = $request->getSession()->get(self::SESSION_KEY))
+        ) {
+            return $sessionCountry;
+        }
+
         $hash = spl_object_hash($request);
 
         if ($trackRequest && isset($this->requestCountries[$hash])) {

@@ -1,0 +1,24 @@
+
+<div id="tl_geoip2_country" class="maintenance_<?= $this->isActive ? 'active' : 'inactive' ?>">
+
+  <h2 class="sub_headline sub_headline_index"><?= $this->trans('tl_maintenance.geoip2_switch') ?></h2>
+
+  <form class="tl_form" method="post">
+    <div class="tl_formbody_edit">
+      <input type="hidden" name="FORM_SUBMIT" value="geoip2_switch">
+      <input type="hidden" name="REQUEST_TOKEN" value="<?= REQUEST_TOKEN ?>">
+      <fieldset class="tl_box">
+        <div class="w50 widget">
+          <?= $this->widget->parse() ?>
+          <?php if (!$this->widget->hasErrors()): ?>
+            <p class="tl_help tl_tip"><?= $this->trans('tl_maintenance.geoip2_country.1') ?></p>
+          <?php endif; ?>
+        </div>
+      </fieldset>
+    </div>
+    <div class="tl_submit_container">
+      <button type="submit" class="tl_submit"><?= $this->trans('MSC.apply') ?></button>
+    </div>
+  </form>
+
+</div>

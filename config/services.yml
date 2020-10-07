@@ -3,6 +3,14 @@ services:
         autoconfigure: true
         autowire: false
 
+    Terminal42\Geoip2CountryBundle\Backend\CountryPreviewModule:
+        arguments:
+            - '@database_connection'
+            - '@session'
+            - '@translator'
+            - '%terminal42_geoip2_country.dca_tables%'
+        public: true
+
     Terminal42\Geoip2CountryBundle\CountryProvider:
         arguments:
             - !service

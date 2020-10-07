@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file source-language="en">
+        <body>
+            <trans-unit id="tl_maintenance.geoip2_switch">
+                <source>Switch GeoIP Country</source>
+            </trans-unit>
+            <trans-unit id="tl_maintenance.geoip2_unknown">
+                <source>-- Unknown --</source>
+            </trans-unit>
+            <trans-unit id="tl_maintenance.geoip2_country.0">
+                <source>Country</source>
+            </trans-unit>
+            <trans-unit id="tl_maintenance.geoip2_country.1">
+                <source>Select a country to show GeoIP content for.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
