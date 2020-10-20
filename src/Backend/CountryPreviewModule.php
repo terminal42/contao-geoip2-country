@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Contao.
  *
@@ -74,6 +76,7 @@ class CountryPreviewModule implements \executable
     private function getUsedCountries(): array
     {
         $queries = [];
+
         foreach ($this->supportedTables as $table) {
             $queries[] = "SELECT geoip_countries FROM $table WHERE geoip_visibility='show' OR geoip_visibility='hide'";
         }
@@ -103,9 +106,12 @@ class CountryPreviewModule implements \executable
             ];
         }
 
-        usort($options, static function ($option1, $option2) {
-            return strcmp($option1['label'], $option2['label']);
-        });
+        usort(
+            $options,
+            static function ($option1, $option2) {
+                return strcmp($option1['label'], $option2['label']);
+            }
+        );
 
         array_unshift($options, ['value' => '', 'label' => '-', 'default' => null === $current]);
 

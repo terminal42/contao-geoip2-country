@@ -8,8 +8,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Terminal42\Geoip2CountryBundle\CountryProvider;
-use Terminal42\Geoip2CountryBundle\EventListener\DcaLoaderListener;
 
 class Terminal42Geoip2CountryExtension extends Extension
 {

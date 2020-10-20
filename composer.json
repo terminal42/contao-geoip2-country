@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "contao/manager-plugin": "^2.9",
-        "contao/easy-coding-standard": "^1.0",
+        "contao/easy-coding-standard": "^3.0",
         "friendsofsymfony/http-cache": "^2.6"
     },
     "conflict": {

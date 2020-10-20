@@ -32,7 +32,8 @@ class CountryProvider
      */
     public function getCountryCode(Request $request, bool $trackRequest = true): string
     {
-        if ($request->hasPreviousSession()
+        if (
+            $request->hasPreviousSession()
             && null !== ($sessionCountry = $request->getSession()->get(self::SESSION_KEY))
         ) {
             return $sessionCountry;
