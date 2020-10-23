@@ -16,14 +16,18 @@ class CountryProvider
 {
     public const SESSION_KEY = 'geoip2_country';
 
-    private Reader $reader;
-    private ?string $fallbackCountry;
+    private ?Reader $reader;
+    private string $fallbackCountry;
     private array $requestCountries = [];
 
-    public function __construct(Reader $reader, string $fallbackCountry = 'XX')
+    public function __construct(Reader $reader = null, string $fallbackCountry = 'XX')
     {
         $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;
+
+        if (null === $this->reader && isset($_SERVER['GEOIP2_DATABASE'])) {
+            $this->reader = new Reader($_SERVER['GEOIP2_DATABASE']);
+        }
     }
 
     /**
@@ -81,6 +85,10 @@ class CountryProvider
     {
         if ($request->headers->has(CacheHeaderSubscriber::HEADER_NAME)) {
             return $request->headers->get(CacheHeaderSubscriber::HEADER_NAME);
+        }
+
+        if (null === $this->reader) {
+            return $this->fallbackCountry;
         }
 
         try {

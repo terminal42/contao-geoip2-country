@@ -13,10 +13,7 @@ services:
 
     Terminal42\Geoip2CountryBundle\CountryProvider:
         arguments:
-            - !service
-                class: GeoIp2\Database\Reader
-                arguments:
-                    - '%terminal42_geoip2_country.database_path%'
+            - ~
             - '%terminal42_geoip2_country.fallback_country%'
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
