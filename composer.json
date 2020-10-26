@@ -24,6 +24,7 @@
         "symfony/dependency-injection": "^4.4 || ^5.0",
         "symfony/event-dispatcher": "^4.4 || ^5.0",
         "symfony/http-kernel": "^4.4 || ^5.0",
+        "doctrine/dbal": "^2.11",
         "geoip2/geoip2": "~2.0"
     },
     "require-dev": {
