@@ -85,6 +85,10 @@ class CountryPreviewModule implements \executable
             'SELECT GROUP_CONCAT(geoip_countries) FROM ('.implode(' UNION ', $queries).') AS result'
         )->fetchOne();
 
+        if (!$countries) {
+            return [];
+        }
+
         return array_values(array_filter(array_unique(explode(',', $countries))));
     }
 
