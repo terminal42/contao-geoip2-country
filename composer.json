@@ -12,6 +12,11 @@
         "type": "github",
         "url": "https://github.com/terminal42"
     }],
+    "support": {
+        "issues": "https://github.com/terminal42/contao-geoip2-country/issues",
+        "source": "https://github.com/terminal42/contao-geoip2-country",
+        "forum": "https://community.contao.org"
+    },
     "require": {
         "php": "^7.4",
         "contao/core-bundle": "^4.9.6",
