@@ -24,7 +24,7 @@ class Plugin implements BundlePluginInterface, HttpCacheSubscriberPluginInterfac
 
     public function getHttpCacheSubscribers(): array
     {
-        if (!isset($_SERVER['GEOIP2_DATABASE'])) {
+        if (empty($_SERVER['GEOIP2_DATABASE'])) {
             return [];
         }
 

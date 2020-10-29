@@ -25,7 +25,7 @@ class CountryProvider
         $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;
 
-        if (null === $this->reader && isset($_SERVER['GEOIP2_DATABASE'])) {
+        if (null === $this->reader && !empty($_SERVER['GEOIP2_DATABASE'])) {
             $this->reader = new Reader($_SERVER['GEOIP2_DATABASE']);
         }
     }
