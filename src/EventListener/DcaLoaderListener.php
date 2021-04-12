@@ -27,6 +27,19 @@ class DcaLoaderListener
     {
         if (\in_array($table, $this->supportedTables, true)) {
             $this->addFieldsToDCA($table);
+
+            // New palettes might be added by other onload_callback (which run after the loadDataContainer hook)
+            $GLOBALS['TL_DCA'][$table]['config']['onload_callback'][] = static function () use ($table) {
+                $pm = PaletteManipulator::create()
+                    ->addField('geoip_visibility', 'protected', PaletteManipulator::POSITION_AFTER, 'protected_legend')
+                ;
+
+                foreach ($GLOBALS['TL_DCA'][$table]['palettes'] as $k => $v) {
+                    if (\is_string($v)) {
+                        $pm->applyToPalette($k, $table);
+                    }
+                }
+            };
         }
 
         if (
@@ -39,16 +52,6 @@ class DcaLoaderListener
 
     private function addFieldsToDCA(string $table): void
     {
-        $pm = PaletteManipulator::create()
-            ->addField('geoip_visibility', 'protected', PaletteManipulator::POSITION_AFTER, 'protected_legend')
-        ;
-
-        foreach ($GLOBALS['TL_DCA'][$table]['palettes'] as $k => $v) {
-            if (\is_string($v)) {
-                $pm->applyToPalette($k, $table);
-            }
-        }
-
         $GLOBALS['TL_DCA'][$table]['palettes']['__selector__'][] = 'geoip_visibility';
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_show'] = 'geoip_countries';
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_hide'] = 'geoip_countries';
