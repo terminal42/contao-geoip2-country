@@ -4,24 +4,29 @@
     "keywords": ["maxmind", "geoip", "country", "protect", "access"],
     "type": "contao-bundle",
     "license": "MIT",
-    "authors": [{
-        "name": "terminal42 gmbh",
-        "homepage": "https://www.terminal42.ch"
-    }],
-    "funding": [{
-        "type": "github",
-        "url": "https://github.com/terminal42"
-    }, {
-        "type": "other",
-        "url": "https://ko-fi.com/terminal42"
-    }],
+    "authors": [
+        {
+            "name": "terminal42 gmbh",
+            "homepage": "https://www.terminal42.ch"
+        }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/terminal42"
+        },
+        {
+            "type": "other",
+            "url": "https://ko-fi.com/terminal42"
+        }
+    ],
     "support": {
         "issues": "https://github.com/terminal42/contao-geoip2-country/issues",
         "source": "https://github.com/terminal42/contao-geoip2-country",
         "forum": "https://community.contao.org"
     },
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "contao/core-bundle": "^4.9.6",
         "symfony/config": "^4.4 || ^5.0",
         "symfony/dependency-injection": "^4.4 || ^5.0",
