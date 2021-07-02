@@ -25,7 +25,7 @@ class NavigationTemplateListener
             return;
         }
 
-        $country = $this->countryProvider->getCountryCode($this->requestStack->getMasterRequest());
+        $country = null;
 
         foreach ($items as $k => $item) {
             $visibility = $item['geoip_visibility'] ?? null;
@@ -33,6 +33,10 @@ class NavigationTemplateListener
 
             if ('show' !== $visibility && 'hide' !== $visibility) {
                 continue;
+            }
+
+            if (null === $country) {
+                $country = $this->countryProvider->getCountryCode($this->requestStack->getMasterRequest());
             }
 
             $countries = array_map('strtoupper', explode(',', $countries));
