@@ -108,16 +108,16 @@ class DcaLoaderListener
 
     private function addHeaderInformation(string $table): void
     {
-        $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'];
+        $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] ?? null;
 
         $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] = function (array $header) use ($previous, $table): array {
             $act = (string) Input::get('act');
             $ptable = $GLOBALS['TL_DCA'][$table]['config']['ptable'];
 
             if ('' === $act || 'select' === $act || ('paste' === $act && 'create' === Input::get('mode'))) {
-                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=?", [(int) Input::get('id')]);
+                $parent = $this->connection->fetchAssociative("SELECT * FROM $ptable WHERE id=?", [(int) Input::get('id')]);
             } elseif ('paste' === $act) {
-                $parent = $this->connection->fetchAssoc("SELECT * FROM $ptable WHERE id=(SELECT pid FROM $table WHERE id=?)", [(int) Input::get('id')]);
+                $parent = $this->connection->fetchAssociative("SELECT * FROM $ptable WHERE id=(SELECT pid FROM $table WHERE id=?)", [(int) Input::get('id')]);
             }
 
             if (!$parent) {
