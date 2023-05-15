@@ -6,9 +6,11 @@ namespace Terminal42\Geoip2CountryBundle\DependencyInjection;
 
 use GeoIp2\Database\Reader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
@@ -27,8 +29,12 @@ class Terminal42Geoip2CountryExtension extends Extension
         $container->setParameter('terminal42_geoip2_country.database_path', $config['database_path']);
 
         if ($config['database_path']) {
-            $definition = $container->findDefinition(CountryProvider::class);
-            $definition->replaceArgument(0, new Definition(Reader::class, [$config['database_path']]));
+            $readerId = 'terminal42_geoip2_country.geoip_reader';
+            $container->setDefinition($readerId, new Definition(Reader::class, [$config['database_path']]));
+            $container
+                ->findDefinition(CountryProvider::class)
+                ->replaceArgument(0, new ServiceClosureArgument(new Reference($readerId)))
+            ;
         }
     }
 }

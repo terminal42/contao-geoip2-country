@@ -16,17 +16,20 @@ class CountryProvider
 {
     public const SESSION_KEY = 'geoip2_country';
 
-    private ?Reader $reader;
+    /**
+     * @var \Closure():Reader|null
+     */
+    private $reader;
     private string $fallbackCountry;
     private array $requestCountries = [];
 
-    public function __construct(Reader $reader = null, string $fallbackCountry = 'XX')
+    public function __construct(\Closure $reader = null, string $fallbackCountry = 'XX')
     {
         $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;
 
         if (null === $this->reader && !empty($_SERVER['GEOIP2_DATABASE'])) {
-            $this->reader = new Reader($_SERVER['GEOIP2_DATABASE']);
+            $this->reader = static fn() => new Reader($_SERVER['GEOIP2_DATABASE']);
         }
     }
 
@@ -92,7 +95,7 @@ class CountryProvider
         }
 
         try {
-            return $this->reader->country($request->getClientIp())->country->isoCode ?: $this->fallbackCountry;
+            return ($this->reader)()->country($request->getClientIp())->country->isoCode ?: $this->fallbackCountry;
         } catch (AddressNotFoundException $exception) {
             return $this->fallbackCountry;
         }
