@@ -21,7 +21,7 @@ class FormCountrySelectListener
 
     public function __invoke(Widget $widget)
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         if ('countryselect' === $widget->type && null !== $request && $request->isMethodCacheable()) {
             $widget->value = strtolower($this->countryProvider->getCountryCode($request));

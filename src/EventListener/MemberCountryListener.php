@@ -24,7 +24,7 @@ class MemberCountryListener
             return;
         }
 
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         if (null === $request) {
             return;

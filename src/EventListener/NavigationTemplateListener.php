@@ -36,7 +36,7 @@ class NavigationTemplateListener
             }
 
             if (null === $country) {
-                $country = $this->countryProvider->getCountryCode($this->requestStack->getMasterRequest());
+                $country = $this->countryProvider->getCountryCode($this->requestStack->getMainRequest());
             }
 
             $countries = array_map('strtoupper', explode(',', $countries));
