@@ -9,7 +9,6 @@ use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\HttpKernel\HttpCacheSubscriberPluginInterface;
-use GeoIp2\Database\Reader;
 use Terminal42\Geoip2CountryBundle\HttpKernel\CacheHeaderSubscriber;
 use Terminal42\Geoip2CountryBundle\Terminal42Geoip2CountryBundle;
 
@@ -28,6 +27,6 @@ class Plugin implements BundlePluginInterface, HttpCacheSubscriberPluginInterfac
             return [];
         }
 
-        return [new CacheHeaderSubscriber(new Reader($_SERVER['GEOIP2_DATABASE']))];
+        return [new CacheHeaderSubscriber($_SERVER['GEOIP2_DATABASE'])];
     }
 }

@@ -14,16 +14,27 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
 {
     public const HEADER_NAME = 'GeoIP2-Country';
 
-    private Reader $reader;
+    private ?Reader $reader = null;
+    private string $databasePath;
 
-    public function __construct(Reader $geoip2Reader)
+    /**
+     * @param Reader|string $databasePath
+     */
+    public function __construct($databasePath)
     {
-        $this->reader = $geoip2Reader;
+        if ($databasePath instanceof Reader) {
+            $this->reader = $databasePath;
+            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+            return;
+        }
+
+        $this->databasePath = $databasePath;
     }
 
     public function __invoke(CacheEvent $event): void
     {
         $request = $event->getRequest();
+        $this->initReader();
 
         try {
             $country = $this->reader->country($request->getClientIp())->country->isoCode;
@@ -45,5 +56,14 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
         return [
             Events::PRE_HANDLE => '__invoke',
         ];
+    }
+
+    private function initReader(): void
+    {
+        if ($this->reader) {
+            return;
+        }
+
+        $this->reader = new Reader($this->databasePath);
     }
 }

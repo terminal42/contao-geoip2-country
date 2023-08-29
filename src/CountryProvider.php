@@ -10,24 +10,33 @@ use GeoIp2\Exception\AddressNotFoundException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Service\ResetInterface;
 use Terminal42\Geoip2CountryBundle\HttpKernel\CacheHeaderSubscriber;
 
-class CountryProvider
+class CountryProvider implements ResetInterface
 {
     public const SESSION_KEY = 'geoip2_country';
 
-    private ?Reader $reader;
+    private ?Reader $reader = null;
+    private ?string $databasePath;
     private string $fallbackCountry;
     private array $requestCountries = [];
 
-    public function __construct(?Reader $reader = null, string $fallbackCountry = 'XX')
+    /**
+     * @param Reader|string|null $databasePath
+     */
+    public function __construct($databasePath = null, string $fallbackCountry = 'XX')
     {
-        $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;
 
-        if (null === $this->reader && !empty($_SERVER['GEOIP2_DATABASE'])) {
-            $this->reader = new Reader($_SERVER['GEOIP2_DATABASE']);
+        if ($databasePath instanceof Reader) {
+            $this->reader = $databasePath;
+            $this->databasePath = null;
+            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+            return;
         }
+
+        $this->databasePath = $databasePath ?? $_SERVER['GEOIP2_DATABASE'] ?? null;
     }
 
     /**
@@ -77,6 +86,14 @@ class CountryProvider
         $response->headers->set(MakeResponsePrivateListener::DEBUG_HEADER, CacheHeaderSubscriber::HEADER_NAME.'='.$this->requestCountries[$hash]);
     }
 
+    public function reset(): void
+    {
+        if ($this->reader && null !== $this->databasePath) {
+            $this->reader->close();
+            $this->reader = null;
+        }
+    }
+
     /**
      * @throws AddressNotFoundException
      * @throws InvalidDatabaseException
@@ -87,6 +104,8 @@ class CountryProvider
             return $request->headers->get(CacheHeaderSubscriber::HEADER_NAME);
         }
 
+        $this->initReader();
+
         if (null === $this->reader) {
             return $this->fallbackCountry;
         }
@@ -96,5 +115,14 @@ class CountryProvider
         } catch (AddressNotFoundException $exception) {
             return $this->fallbackCountry;
         }
+    }
+
+    private function initReader(): void
+    {
+        if ($this->reader || !$this->databasePath) {
+            return;
+        }
+
+        $this->reader = new Reader($this->databasePath);
     }
 }

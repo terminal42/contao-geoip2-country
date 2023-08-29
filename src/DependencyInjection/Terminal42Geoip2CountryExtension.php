@@ -28,7 +28,7 @@ class Terminal42Geoip2CountryExtension extends Extension
 
         if ($config['database_path']) {
             $definition = $container->findDefinition(CountryProvider::class);
-            $definition->replaceArgument(0, new Definition(Reader::class, [$config['database_path']]));
+            $definition->replaceArgument(0, $config['database_path']);
         }
     }
 }
