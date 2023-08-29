@@ -57,7 +57,7 @@ class DcaLoaderListener
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_hide'] = 'geoip_countries';
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_visibility'] = [
-            'label' => &$GLOBALS['TL_LANG'][$table]['geoip_visibility'],
+            'label' => &$GLOBALS['TL_LANG']['MSC']['geoip_visibility'],
             'exclude' => true,
             'inputType' => 'radio',
             'options' => ['none', 'show', 'hide'],
@@ -70,7 +70,7 @@ class DcaLoaderListener
         ];
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_countries'] = [
-            'label' => &$GLOBALS['TL_LANG'][$table]['geoip_countries'],
+            'label' => &$GLOBALS['TL_LANG']['MSC']['geoip_countries'],
             'exclude' => true,
             'inputType' => 'select',
             'options_callback' => static fn () => System::getCountries(),
