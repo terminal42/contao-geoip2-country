@@ -143,10 +143,10 @@ class DcaLoaderListener
 
     private function addFlagsToListView(string $table): void
     {
-        $previous = $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'];
+        $previous = $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'] ?? null;
 
-        $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'] = function (array $row) use ($previous) {
-            $buffer = $this->callPrevious($previous, \func_get_args());
+        $GLOBALS['TL_DCA'][$table]['list']['label']['label_callback'] = function (array $row, $label) use ($previous) {
+            $buffer = $previous ? $this->callPrevious($previous, \func_get_args()) : $label;
 
             if (\is_array($buffer)) {
                 return $buffer;
@@ -158,6 +158,11 @@ class DcaLoaderListener
 
     private function addFlagsToParentView(string $table): void
     {
+        if (!isset($GLOBALS['TL_DCA'][$table]['list']['sorting']['child_record_callback'])) {
+            $this->addFlagsToListView($table);
+            return;
+        }
+
         $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['child_record_callback'];
 
         $GLOBALS['TL_DCA'][$table]['list']['sorting']['child_record_callback'] = function (array $row) use ($previous) {
