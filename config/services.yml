@@ -16,7 +16,7 @@ services:
             - ~
             - '%terminal42_geoip2_country.fallback_country%'
         tags:
-            - kernel.reset
+            - { name: kernel.reset, method: reset }
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
         arguments:
