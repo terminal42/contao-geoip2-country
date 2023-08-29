@@ -20,7 +20,7 @@ class CountryProvider
     private string $fallbackCountry;
     private array $requestCountries = [];
 
-    public function __construct(Reader $reader = null, string $fallbackCountry = 'XX')
+    public function __construct(?Reader $reader = null, string $fallbackCountry = 'XX')
     {
         $this->reader = $reader;
         $this->fallbackCountry = $fallbackCountry;

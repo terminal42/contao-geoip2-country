@@ -20,7 +20,7 @@ class KernelResponseListener
     {
         $this->countryProvider->updateResponse(
             $event->getRequest(),
-            $event->getResponse()
+            $event->getResponse(),
         );
     }
 }

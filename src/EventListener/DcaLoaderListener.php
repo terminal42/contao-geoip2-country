@@ -29,7 +29,7 @@ class DcaLoaderListener
             $this->addFieldsToDCA($table);
 
             // New palettes might be added by other onload_callback (which run after the loadDataContainer hook)
-            $GLOBALS['TL_DCA'][$table]['config']['onload_callback'][] = static function () use ($table) {
+            $GLOBALS['TL_DCA'][$table]['config']['onload_callback'][] = static function () use ($table): void {
                 $pm = PaletteManipulator::create()
                     ->addField('geoip_visibility', 'protected', PaletteManipulator::POSITION_AFTER, 'protected_legend')
                 ;
@@ -73,9 +73,7 @@ class DcaLoaderListener
             'label' => &$GLOBALS['TL_LANG'][$table]['geoip_countries'],
             'exclude' => true,
             'inputType' => 'select',
-            'options_callback' => static function () {
-                return System::getCountries();
-            },
+            'options_callback' => static fn () => System::getCountries(),
             'eval' => [
                 'includeBlankOption' => true,
                 'mandatory' => true,
@@ -111,6 +109,7 @@ class DcaLoaderListener
         $previous = $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] ?? null;
 
         $GLOBALS['TL_DCA'][$table]['list']['sorting']['header_callback'] = function (array $header) use ($previous, $table): array {
+            $parent = [];
             $act = (string) Input::get('act');
             $ptable = $GLOBALS['TL_DCA'][$table]['config']['ptable'];
 
@@ -204,13 +203,13 @@ class DcaLoaderListener
         $buffer = sprintf(
             '<span style="all:unset;display:inline-flex;margin-left:5px;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px" title="%s">',
             $color,
-            $this->getLabelForCountries($row['geoip_visibility'], $countries)
+            $this->getLabelForCountries($row['geoip_visibility'], $countries),
         );
 
         foreach ($countries as $country) {
             $buffer .= sprintf(
                 '<img style="all:unset;display:block;height:14px;padding:0 2px" src="bundles/terminal42geoip2country/flags/%s.svg" alt="" height="14">',
-                $country
+                $country,
             );
         }
 
@@ -227,7 +226,7 @@ class DcaLoaderListener
         return $this->translator->trans(
             'MSC.geoip_visibility.'.$visibility.'_for',
             [implode(', ', array_intersect_key(System::getCountries(), array_flip($countries)))],
-            'contao_default'
+            'contao_default',
         );
     }
 }

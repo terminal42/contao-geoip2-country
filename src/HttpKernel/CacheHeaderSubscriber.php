@@ -32,7 +32,7 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
                 $request->headers->set(
                     self::HEADER_NAME,
                     $country,
-                    true
+                    true,
                 );
             }
         } catch (AddressNotFoundException $exception) {

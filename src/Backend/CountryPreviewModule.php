@@ -74,7 +74,7 @@ class CountryPreviewModule implements \executable
         }
 
         $countries = $this->connection->executeQuery(
-            'SELECT GROUP_CONCAT(geoip_countries) FROM ('.implode(' UNION ', $queries).') AS result'
+            'SELECT GROUP_CONCAT(geoip_countries) FROM ('.implode(' UNION ', $queries).') AS result',
         )->fetchOne();
 
         if (!$countries) {
@@ -104,9 +104,7 @@ class CountryPreviewModule implements \executable
 
         usort(
             $options,
-            static function ($option1, $option2) {
-                return strcmp($option1['label'], $option2['label']);
-            }
+            static fn ($option1, $option2) => strcmp($option1['label'], $option2['label']),
         );
 
         array_unshift($options, ['value' => '', 'label' => '-', 'default' => null === $current]);

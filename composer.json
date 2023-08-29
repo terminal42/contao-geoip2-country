@@ -37,8 +37,8 @@
     },
     "require-dev": {
         "contao/manager-plugin": "^2.9",
-        "contao/easy-coding-standard": "^3.0",
-        "friendsofsymfony/http-cache": "^2.6"
+        "friendsofsymfony/http-cache": "^2.6",
+        "terminal42/contao-build-tools": "dev-main"
     },
     "conflict": {
         "contao/manager-plugin": "<2.9 || >=3.0",
@@ -51,10 +51,5 @@
     },
     "extra": {
         "contao-manager-plugin": "Terminal42\\Geoip2CountryBundle\\ContaoManager\\Plugin"
-    },
-    "scripts": {
-        "cs-fixer": [
-            "vendor/bin/ecs check src/ --fix --ansi"
-        ]
     }
 }
