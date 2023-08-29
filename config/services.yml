@@ -6,7 +6,7 @@ services:
     Terminal42\Geoip2CountryBundle\Backend\CountryPreviewModule:
         arguments:
             - '@database_connection'
-            - '@session'
+            - '@request_stack'
             - '@translator'
             - '%terminal42_geoip2_country.dca_tables%'
         public: true

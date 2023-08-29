@@ -11,21 +11,21 @@ use Contao\SelectMenu;
 use Contao\System;
 use Contao\Widget;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class CountryPreviewModule implements \executable
 {
     private Connection $connection;
-    private Session $session;
+    private RequestStack $requestStack;
     private TranslatorInterface $translator;
     private array $supportedTables;
 
-    public function __construct(Connection $connection, Session $session, TranslatorInterface $translator, array $supportedTables)
+    public function __construct(Connection $connection, RequestStack $requestStack, TranslatorInterface $translator, array $supportedTables)
     {
         $this->connection = $connection;
-        $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->supportedTables = $supportedTables;
     }
@@ -37,13 +37,15 @@ class CountryPreviewModule implements \executable
 
     public function run(): string
     {
+        $request = $this->requestStack->getCurrentRequest();
         $countries = $this->getUsedCountries();
 
-        if (empty($countries)) {
+        if (empty($countries) || !$request) {
             return '';
         }
 
-        $currentCountry = $this->session->get(CountryProvider::SESSION_KEY);
+        $session = $request->getSession();
+        $currentCountry = $session->get(CountryProvider::SESSION_KEY);
         $widget = $this->generateWidget($countries, $currentCountry ? strtolower($currentCountry) : null);
 
         if ('geoip2_switch' === Input::post('FORM_SUBMIT')) {
@@ -51,10 +53,11 @@ class CountryPreviewModule implements \executable
 
             if (!$widget->hasErrors()) {
                 if (empty($widget->value)) {
-                    $this->session->remove(CountryProvider::SESSION_KEY);
+                    $session->remove(CountryProvider::SESSION_KEY);
                 } else {
-                    $this->session->set(CountryProvider::SESSION_KEY, strtoupper($widget->value));
+                    $session->set(CountryProvider::SESSION_KEY, strtoupper($widget->value));
                 }
+
                 Controller::reload();
             }
         }
