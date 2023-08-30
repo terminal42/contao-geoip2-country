@@ -25,6 +25,7 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
         if ($databasePath instanceof Reader) {
             $this->reader = $databasePath;
             trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+
             return;
         }
 

@@ -33,6 +33,7 @@ class CountryProvider implements ResetInterface
             $this->reader = $databasePath;
             $this->databasePath = null;
             trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+
             return;
         }
 

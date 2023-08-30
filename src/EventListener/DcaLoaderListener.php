@@ -160,6 +160,7 @@ class DcaLoaderListener
     {
         if (!isset($GLOBALS['TL_DCA'][$table]['list']['sorting']['child_record_callback'])) {
             $this->addFlagsToListView($table);
+
             return;
         }
 
@@ -183,7 +184,7 @@ class DcaLoaderListener
         };
     }
 
-    private function callPrevious($previous, $arguments)
+    private function callPrevious($previous, array $arguments)
     {
         if (\is_array($previous)) {
             return System::importStatic($previous[0])->{$previous[1]}(...$arguments);

@@ -19,7 +19,7 @@ class FormCountrySelectListener
         $this->requestStack = $requestStack;
     }
 
-    public function __invoke(Widget $widget)
+    public function __invoke(Widget $widget): Widget
     {
         $request = $this->requestStack->getMainRequest();
 

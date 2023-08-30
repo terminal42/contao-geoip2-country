@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\DependencyInjection;
 
-use GeoIp2\Database\Reader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
