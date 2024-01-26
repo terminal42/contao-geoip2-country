@@ -9,13 +9,10 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class MemberCountryListener
 {
-    private CountryProvider $countryProvider;
-    private RequestStack $requestStack;
-
-    public function __construct(CountryProvider $countryProvider, RequestStack $requestStack)
-    {
-        $this->countryProvider = $countryProvider;
-        $this->requestStack = $requestStack;
+    public function __construct(
+        private readonly CountryProvider $countryProvider,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function __invoke(string $table): void
@@ -30,6 +27,6 @@ class MemberCountryListener
             return;
         }
 
-        $GLOBALS['TL_DCA']['tl_member']['fields']['country']['default'] = strtolower($this->countryProvider->getCountryCode($request));
+        $GLOBALS['TL_DCA']['tl_member']['fields']['country']['default'] = $this->countryProvider->getCountryCode($request);
     }
 }

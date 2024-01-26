@@ -6,28 +6,27 @@ namespace Terminal42\Geoip2CountryBundle\Backend;
 
 use Contao\BackendTemplate;
 use Contao\Controller;
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
+use Contao\CoreBundle\Intl\Countries;
 use Contao\Input;
+use Contao\MaintenanceModuleInterface;
 use Contao\SelectMenu;
-use Contao\System;
 use Contao\Widget;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
-class CountryPreviewModule implements \executable
+class CountryPreviewModule implements MaintenanceModuleInterface
 {
-    private Connection $connection;
-    private RequestStack $requestStack;
-    private TranslatorInterface $translator;
-    private array $supportedTables;
-
-    public function __construct(Connection $connection, RequestStack $requestStack, TranslatorInterface $translator, array $supportedTables)
-    {
-        $this->connection = $connection;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
-        $this->supportedTables = $supportedTables;
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly RequestStack $requestStack,
+        private readonly TranslatorInterface $translator,
+        private readonly Countries $countries,
+        private readonly ContaoCsrfTokenManager $csrfTokenManager,
+        private readonly array $supportedTables,
+    ) {
     }
 
     public function isActive(): bool
@@ -46,7 +45,7 @@ class CountryPreviewModule implements \executable
 
         $session = $request->getSession();
         $currentCountry = $session->get(CountryProvider::SESSION_KEY);
-        $widget = $this->generateWidget($countries, $currentCountry ? strtolower($currentCountry) : null);
+        $widget = $this->generateWidget($countries, $currentCountry);
 
         if ('geoip2_switch' === Input::post('FORM_SUBMIT')) {
             $widget->validate();
@@ -55,7 +54,7 @@ class CountryPreviewModule implements \executable
                 if (empty($widget->value)) {
                     $session->remove(CountryProvider::SESSION_KEY);
                 } else {
-                    $session->set(CountryProvider::SESSION_KEY, strtoupper($widget->value));
+                    $session->set(CountryProvider::SESSION_KEY, (string) $widget->value);
                 }
 
                 Controller::reload();
@@ -63,6 +62,7 @@ class CountryPreviewModule implements \executable
         }
 
         $template = new BackendTemplate('be_geoip2_switch');
+        $template->requestToken = $this->csrfTokenManager->getDefaultTokenValue();
         $template->widget = $widget;
 
         return $template->parse();
@@ -84,17 +84,17 @@ class CountryPreviewModule implements \executable
             return [];
         }
 
-        return array_values(array_filter(array_unique(explode(',', $countries))));
+        return array_values(array_filter(array_unique(explode(',', (string) $countries))));
     }
 
-    private function generateWidget(array $countries, ?string $current): Widget
+    private function generateWidget(array $countries, string|null $current): Widget
     {
         $widget = new SelectMenu();
         $widget->id = 'country';
         $widget->name = 'country';
         $widget->label = $this->translator->trans('tl_maintenance.geoip2_country.0', [], 'contao_tl_maintenance');
 
-        $countryNames = System::getCountries();
+        $countryNames = $this->countries->getCountries();
         $options = [];
 
         foreach ($countries as $country) {
@@ -113,9 +113,9 @@ class CountryPreviewModule implements \executable
         array_unshift($options, ['value' => '', 'label' => '-', 'default' => null === $current]);
 
         $options[] = [
-            'value' => 'xx',
+            'value' => 'XX',
             'label' => $this->translator->trans('tl_maintenance.geoip2_unknown', [], 'contao_tl_maintenance'),
-            'default' => 'xx' === $current,
+            'default' => 'XX' === $current,
         ];
 
         $widget->options = $options;

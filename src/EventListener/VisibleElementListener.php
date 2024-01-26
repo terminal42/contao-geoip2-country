@@ -10,13 +10,10 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class VisibleElementListener
 {
-    private CountryProvider $countryProvider;
-    private RequestStack $requestStack;
-
-    public function __construct(CountryProvider $countryProvider, RequestStack $requestStack)
-    {
-        $this->countryProvider = $countryProvider;
-        $this->requestStack = $requestStack;
+    public function __construct(
+        private readonly CountryProvider $countryProvider,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function __invoke(Model $element, bool $hasAccess): bool
@@ -25,7 +22,7 @@ class VisibleElementListener
             return $hasAccess;
         }
 
-        $countries = array_map('strtoupper', explode(',', $element->geoip_countries));
+        $countries = explode(',', (string) $element->geoip_countries);
         $country = $this->countryProvider->getCountryCode($this->requestStack->getMainRequest());
 
         return \in_array($country, $countries, true) === ('show' === $element->geoip_visibility);

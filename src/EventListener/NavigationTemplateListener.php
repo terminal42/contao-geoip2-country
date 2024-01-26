@@ -10,18 +10,15 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class NavigationTemplateListener
 {
-    private CountryProvider $countryProvider;
-    private RequestStack $requestStack;
-
-    public function __construct(CountryProvider $countryProvider, RequestStack $requestStack)
-    {
-        $this->countryProvider = $countryProvider;
-        $this->requestStack = $requestStack;
+    public function __construct(
+        private readonly CountryProvider $countryProvider,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function __invoke(Template $template): void
     {
-        if ('nav_' !== substr($template->getName(), 0, 4) || !\is_array($items = $template->items)) {
+        if (!str_starts_with($template->getName(), 'nav_') || !\is_array($items = $template->items)) {
             return;
         }
 
@@ -29,7 +26,6 @@ class NavigationTemplateListener
 
         foreach ($items as $k => $item) {
             $visibility = $item['geoip_visibility'] ?? null;
-            $countries = $item['geoip_countries'] ?? '';
 
             if ('show' !== $visibility && 'hide' !== $visibility) {
                 continue;
@@ -39,7 +35,7 @@ class NavigationTemplateListener
                 $country = $this->countryProvider->getCountryCode($this->requestStack->getMainRequest());
             }
 
-            $countries = array_map('strtoupper', explode(',', $countries));
+            $countries = explode(',', (string) ($item['geoip_countries'] ?? ''));
 
             if (\in_array($country, $countries, true) !== ('show' === $visibility)) {
                 unset($items[$k]);

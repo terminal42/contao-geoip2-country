@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\Intl\Countries;
 use Contao\Input;
 use Contao\System;
 use Doctrine\DBAL\Connection;
@@ -12,15 +13,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DcaLoaderListener
 {
-    private Connection $connection;
-    private TranslatorInterface $translator;
-    private array $supportedTables;
-
-    public function __construct(Connection $connection, TranslatorInterface $translator, array $supportedTables)
-    {
-        $this->connection = $connection;
-        $this->translator = $translator;
-        $this->supportedTables = $supportedTables;
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly TranslatorInterface $translator,
+        private readonly Countries $countries,
+        private readonly array $supportedTables,
+    ) {
     }
 
     public function __invoke(string $table): void
@@ -52,12 +50,16 @@ class DcaLoaderListener
 
     private function addFieldsToDCA(string $table): void
     {
+        System::loadLanguageFile($table);
+
+        $GLOBALS['TL_LANG'][$table]['geoip_visibility'] = &$GLOBALS['TL_LANG']['MSC']['geoip_visibility'];
+        $GLOBALS['TL_LANG'][$table]['geoip_countries'] = &$GLOBALS['TL_LANG']['MSC']['geoip_countries'];
+
         $GLOBALS['TL_DCA'][$table]['palettes']['__selector__'][] = 'geoip_visibility';
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_show'] = 'geoip_countries';
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_hide'] = 'geoip_countries';
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_visibility'] = [
-            'label' => &$GLOBALS['TL_LANG']['MSC']['geoip_visibility'],
             'exclude' => true,
             'inputType' => 'radio',
             'options' => ['none', 'show', 'hide'],
@@ -70,10 +72,9 @@ class DcaLoaderListener
         ];
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_countries'] = [
-            'label' => &$GLOBALS['TL_LANG']['MSC']['geoip_countries'],
             'exclude' => true,
             'inputType' => 'select',
-            'options_callback' => static fn () => System::getCountries(),
+            'options_callback' => fn () => $this->countries->getCountries(),
             'eval' => [
                 'includeBlankOption' => true,
                 'mandatory' => true,
@@ -134,7 +135,7 @@ class DcaLoaderListener
             }
 
             $label = $this->translator->trans($ptable.'.geoip_visibility.0', [], 'contao_'.$ptable);
-            $countries = explode(',', $parent['geoip_countries']);
+            $countries = explode(',', (string) $parent['geoip_countries']);
             $header[$label] = '<span style="color:#C00;font-weight:bold">'.$this->getLabelForCountries($parent['geoip_visibility'], $countries).'</span>';
 
             return $header;
@@ -184,7 +185,7 @@ class DcaLoaderListener
         };
     }
 
-    private function callPrevious($previous, array $arguments)
+    private function callPrevious(mixed $previous, array $arguments): mixed
     {
         if (\is_array($previous)) {
             return System::importStatic($previous[0])->{$previous[1]}(...$arguments);
@@ -203,7 +204,7 @@ class DcaLoaderListener
             return '';
         }
 
-        $countries = explode(',', $row['geoip_countries']);
+        $countries = explode(',', (string) $row['geoip_countries']);
         $color = 'show' === $row['geoip_visibility'] ? '#b2f986' : '#ff89bf';
 
         $buffer = sprintf(
@@ -215,7 +216,7 @@ class DcaLoaderListener
         foreach ($countries as $country) {
             $buffer .= sprintf(
                 '<img style="all:unset;display:block;height:14px;padding:0 2px" src="bundles/terminal42geoip2country/flags/%s.svg" alt="" height="14">',
-                $country,
+                strtolower($country),
             );
         }
 
@@ -231,7 +232,7 @@ class DcaLoaderListener
     {
         return $this->translator->trans(
             'MSC.geoip_visibility.'.$visibility.'_for',
-            [implode(', ', array_intersect_key(System::getCountries(), array_flip($countries)))],
+            [implode(', ', array_intersect_key($this->countries->getCountries(), array_flip($countries)))],
             'contao_default',
         );
     }

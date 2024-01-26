@@ -9,11 +9,8 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class KernelResponseListener
 {
-    private CountryProvider $countryProvider;
-
-    public function __construct(CountryProvider $countryProvider)
+    public function __construct(private readonly CountryProvider $countryProvider)
     {
-        $this->countryProvider = $countryProvider;
     }
 
     public function __invoke(ResponseEvent $event): void

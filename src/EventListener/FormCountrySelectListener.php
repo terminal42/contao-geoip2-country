@@ -10,13 +10,10 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class FormCountrySelectListener
 {
-    private CountryProvider $countryProvider;
-    private RequestStack $requestStack;
-
-    public function __construct(CountryProvider $countryProvider, RequestStack $requestStack)
-    {
-        $this->countryProvider = $countryProvider;
-        $this->requestStack = $requestStack;
+    public function __construct(
+        private readonly CountryProvider $countryProvider,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function __invoke(Widget $widget): Widget
@@ -24,7 +21,7 @@ class FormCountrySelectListener
         $request = $this->requestStack->getMainRequest();
 
         if ('countryselect' === $widget->type && null !== $request && $request->isMethodCacheable()) {
-            $widget->value = strtolower($this->countryProvider->getCountryCode($request));
+            $widget->value = $this->countryProvider->getCountryCode($request);
         }
 
         return $widget;

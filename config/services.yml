@@ -8,6 +8,8 @@ services:
             - '@database_connection'
             - '@request_stack'
             - '@translator'
+            - '@contao.intl.countries'
+            - '@contao.csrf.token_manager'
             - '%terminal42_geoip2_country.dca_tables%'
         public: true
 
@@ -35,6 +37,7 @@ services:
         arguments:
             - '@database_connection'
             - '@translator'
+            - '@contao.intl.countries'
             - '%terminal42_geoip2_country.dca_tables%'
         tags:
             - { name: contao.hook, hook: loadDataContainer }
@@ -59,6 +62,13 @@ services:
             - '@request_stack'
         tags:
             - { name: contao.hook, hook: isVisibleElement }
+
+    Terminal42\Geoip2CountryBundle\Migration\UppercaseCountryMigration:
+        arguments:
+            - '@database_connection'
+            - '%terminal42_geoip2_country.dca_tables%'
+        tags:
+            - contao.migration
 
     Terminal42\Geoip2CountryBundle\Routing\CountryRestrictionFilter:
         arguments:

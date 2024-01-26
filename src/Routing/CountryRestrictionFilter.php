@@ -12,11 +12,8 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 
 class CountryRestrictionFilter implements RouteFilterInterface
 {
-    private CountryProvider $countryProvider;
-
-    public function __construct(CountryProvider $countryProvider)
+    public function __construct(private readonly CountryProvider $countryProvider)
     {
-        $this->countryProvider = $countryProvider;
     }
 
     public function filter(RouteCollection $collection, Request $request): RouteCollection
@@ -32,7 +29,7 @@ class CountryRestrictionFilter implements RouteFilterInterface
                 continue;
             }
 
-            $countries = array_map('strtoupper', explode(',', $pageModel->geoip_countries));
+            $countries = explode(',', (string) $pageModel->geoip_countries);
             $country = $this->countryProvider->getCountryCode($request);
 
             if (\in_array($country, $countries, true) !== ('show' === $pageModel->geoip_visibility)) {

@@ -12,10 +12,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CacheHeaderSubscriber implements EventSubscriberInterface
 {
-    public const HEADER_NAME = 'GeoIP2-Country';
+    final public const HEADER_NAME = 'GeoIP2-Country';
 
-    private ?Reader $reader = null;
-    private string $databasePath;
+    private Reader|null $reader = null;
+
+    private readonly string|null $databasePath;
 
     /**
      * @param Reader|string $databasePath
@@ -24,7 +25,8 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
     {
         if ($databasePath instanceof Reader) {
             $this->reader = $databasePath;
-            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+            $this->databasePath = null;
+            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.self::class.' constructor is deprecated, pass the database path instead.');
 
             return;
         }
@@ -35,10 +37,9 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
     public function __invoke(CacheEvent $event): void
     {
         $request = $event->getRequest();
-        $this->initReader();
 
         try {
-            $country = $this->reader->country($request->getClientIp())->country->isoCode;
+            $country = $this->getReader()->country($request->getClientIp())->country->isoCode;
 
             if ($country) {
                 $request->headers->set(
@@ -47,7 +48,7 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
                     true,
                 );
             }
-        } catch (AddressNotFoundException $exception) {
+        } catch (AddressNotFoundException) {
             // Ignore unknown address and do not set header
         }
     }
@@ -59,12 +60,12 @@ class CacheHeaderSubscriber implements EventSubscriberInterface
         ];
     }
 
-    private function initReader(): void
+    private function getReader(): Reader
     {
         if ($this->reader) {
-            return;
+            return $this->reader;
         }
 
-        $this->reader = new Reader($this->databasePath);
+        return $this->reader = new Reader($this->databasePath);
     }
 }

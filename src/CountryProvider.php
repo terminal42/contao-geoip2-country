@@ -15,24 +15,25 @@ use Terminal42\Geoip2CountryBundle\HttpKernel\CacheHeaderSubscriber;
 
 class CountryProvider implements ResetInterface
 {
-    public const SESSION_KEY = 'geoip2_country';
+    final public const SESSION_KEY = 'geoip2_country';
 
-    private ?Reader $reader = null;
-    private ?string $databasePath;
-    private string $fallbackCountry;
+    private Reader|null $reader = null;
+
+    private string|null $databasePath;
+
     private array $requestCountries = [];
 
     /**
      * @param Reader|string|null $databasePath
      */
-    public function __construct($databasePath = null, string $fallbackCountry = 'XX')
-    {
-        $this->fallbackCountry = $fallbackCountry;
-
+    public function __construct(
+        $databasePath = null,
+        private readonly string $fallbackCountry = 'XX',
+    ) {
         if ($databasePath instanceof Reader) {
             $this->reader = $databasePath;
             $this->databasePath = null;
-            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.__CLASS__.' constructor is deprecated, pass the database path instead.');
+            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.self::class.' constructor is deprecated, pass the database path instead.');
 
             return;
         }
@@ -113,7 +114,7 @@ class CountryProvider implements ResetInterface
 
         try {
             return $this->reader->country($request->getClientIp())->country->isoCode ?: $this->fallbackCountry;
-        } catch (AddressNotFoundException $exception) {
+        } catch (AddressNotFoundException) {
             return $this->fallbackCountry;
         }
     }

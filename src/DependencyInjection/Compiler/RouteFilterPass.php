@@ -11,11 +11,8 @@ use Terminal42\Geoip2CountryBundle\Routing\CountryRestrictionFilter;
 
 class RouteFilterPass implements CompilerPassInterface
 {
-    private string $serviceId;
-
-    public function __construct(string $serviceId)
+    public function __construct(private readonly string $serviceId)
     {
-        $this->serviceId = $serviceId;
     }
 
     public function process(ContainerBuilder $container): void
