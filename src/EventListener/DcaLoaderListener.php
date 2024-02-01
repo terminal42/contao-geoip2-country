@@ -208,7 +208,7 @@ class DcaLoaderListener
         $color = 'show' === $row['geoip_visibility'] ? '#b2f986' : '#ff89bf';
 
         $buffer = sprintf(
-            '<span style="all:unset;display:inline-flex;margin-left:5px;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px" title="%s">',
+            '<span style="order:3"><span style="all:unset;display:inline-flex;margin-left:5px;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px;" title="%s">',
             $color,
             $this->getLabelForCountries($row['geoip_visibility'], $countries),
         );
@@ -220,7 +220,7 @@ class DcaLoaderListener
             );
         }
 
-        return $buffer.'</span>';
+        return $buffer.'</span></span>';
     }
 
     private function hasVisibility(array $row): bool
