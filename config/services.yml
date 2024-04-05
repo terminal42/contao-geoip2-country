@@ -60,6 +60,7 @@ services:
         arguments:
             - '@Terminal42\Geoip2CountryBundle\CountryProvider'
             - '@request_stack'
+            - '@contao.routing.scope_matcher'
         tags:
             - { name: contao.hook, hook: isVisibleElement }
 
