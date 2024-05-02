@@ -94,6 +94,44 @@ IPs change all the time. We recommend to use [MaxMind's Automatic Update Support
 to keep your database up-to-date.
 
 
+## Access the current user country
+
+To retrieve the current country in your own code, inject the `Terminal42\Geoip2CountryBundle\CountryProvider` service
+into your class. Then use the `getCurrentCountry` method and pass the request object to it.
+
+**Example in a Contao `AbstractFrontendModule` controller:**
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\Twig\FragmentTemplate;
+use Contao\ModuleModel;
+use Symfony\Component\HttpFoundation\Request;
+use Terminal42\Geoip2CountryBundle\CountryProvider;
+
+class FooController extends AbstractFrontendModuleController
+{
+    public function __construct(
+        private readonly CountryProvider $countryProvider
+    ) {
+    }
+
+    public function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
+    {
+        // Only show content to Switzerland
+        if ('CH' !== $this->countryProvider->getCurrentCountry($request)) {
+            return new Response();
+        }
+
+        return $template->getResponse();
+    }
+}
+```
+
+
 ## Thanks!
 
 Thanks to Burki & Scherer AG ([@Tsarma](https://github.com/tsarma)) for the original implementation and supporting the
