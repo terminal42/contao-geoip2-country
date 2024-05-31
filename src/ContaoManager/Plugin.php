@@ -14,7 +14,7 @@ use Terminal42\Geoip2CountryBundle\Terminal42Geoip2CountryBundle;
 
 class Plugin implements BundlePluginInterface, HttpCacheSubscriberPluginInterface
 {
-    public function getBundles(ParserInterface $parser)
+    public function getBundles(ParserInterface $parser): array
     {
         return [
             (new BundleConfig(Terminal42Geoip2CountryBundle::class))->setLoadAfter([ContaoCoreBundle::class]),
