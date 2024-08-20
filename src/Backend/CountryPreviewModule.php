@@ -36,16 +36,9 @@ class CountryPreviewModule implements MaintenanceModuleInterface
 
     public function run(): string
     {
-        $request = $this->requestStack->getCurrentRequest();
-        $countries = $this->getUsedCountries();
-
-        if (empty($countries) || !$request) {
-            return '';
-        }
-
-        $session = $request->getSession();
+        $session = $this->requestStack->getSession();
         $currentCountry = $session->get(CountryProvider::SESSION_KEY);
-        $widget = $this->generateWidget($countries, $currentCountry);
+        $widget = $this->generateWidget($currentCountry);
 
         if ('geoip2_switch' === Input::post('FORM_SUBMIT')) {
             $widget->validate();
@@ -87,36 +80,30 @@ class CountryPreviewModule implements MaintenanceModuleInterface
         return array_values(array_filter(array_unique(explode(',', (string) $countries))));
     }
 
-    private function generateWidget(array $countries, string|null $current): Widget
+    private function generateWidget(string|null $current): Widget
     {
         $widget = new SelectMenu();
         $widget->id = 'country';
         $widget->name = 'country';
         $widget->label = $this->translator->trans('tl_maintenance.geoip2_country.0', [], 'contao_tl_maintenance');
+        $widget->class = 'tl_chosen';
 
-        $countryNames = $this->countries->getCountries();
-        $options = [];
+        $options = [
+            ['value' => '', 'label' => '-', 'default' => null === $current],
+            [
+                'value' => 'XX',
+                'label' => $this->translator->trans('tl_maintenance.geoip2_unknown', [], 'contao_tl_maintenance'),
+                'default' => 'XX' === $current,
+            ],
+        ];
 
-        foreach ($countries as $country) {
+        foreach ($this->countries->getCountries() as $code => $label) {
             $options[] = [
-                'value' => $country,
-                'label' => $countryNames[$country],
-                'default' => $country === $current,
+                'value' => $code,
+                'label' => $label,
+                'default' => $code === $current,
             ];
         }
-
-        usort(
-            $options,
-            static fn ($option1, $option2) => strcmp($option1['label'], $option2['label']),
-        );
-
-        array_unshift($options, ['value' => '', 'label' => '-', 'default' => null === $current]);
-
-        $options[] = [
-            'value' => 'XX',
-            'label' => $this->translator->trans('tl_maintenance.geoip2_unknown', [], 'contao_tl_maintenance'),
-            'default' => 'XX' === $current,
-        ];
 
         $widget->options = $options;
 
