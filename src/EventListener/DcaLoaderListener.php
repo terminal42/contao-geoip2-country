@@ -6,6 +6,7 @@ namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\Intl\Countries;
+use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use Doctrine\DBAL\Connection;
@@ -41,7 +42,7 @@ class DcaLoaderListener
         }
 
         if (
-            4 === (int) ($GLOBALS['TL_DCA'][$table]['list']['sorting']['mode'] ?? 0)
+            DataContainer::MODE_PARENT === (int) ($GLOBALS['TL_DCA'][$table]['list']['sorting']['mode'] ?? 0)
             && \in_array($GLOBALS['TL_DCA'][$table]['config']['ptable'] ?? '', $this->supportedTables, true)
         ) {
             $this->addHeaderInformation($table);
@@ -87,19 +88,19 @@ class DcaLoaderListener
         ];
 
         switch ($GLOBALS['TL_DCA'][$table]['list']['sorting']['mode']) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
+            case DataContainer::MODE_UNSORTED:
+            case DataContainer::MODE_SORTED:
+            case DataContainer::MODE_SORTABLE:
+            case DataContainer::MODE_SORTED_PARENT:
                 $this->addFlagsToListView($table);
                 break;
 
-            case 4:
+            case DataContainer::MODE_PARENT:
                 $this->addFlagsToParentView($table);
                 break;
 
-            case 5:
-            case 6:
+            case DataContainer::MODE_TREE:
+            case DataContainer::MODE_TREE_EXTENDED:
                 $this->addFlagsToTreeView($table);
                 break;
         }
