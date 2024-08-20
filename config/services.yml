@@ -5,12 +5,10 @@ services:
 
     Terminal42\Geoip2CountryBundle\Backend\CountryPreviewModule:
         arguments:
-            - '@database_connection'
             - '@request_stack'
             - '@translator'
             - '@contao.intl.countries'
             - '@contao.csrf.token_manager'
-            - '%terminal42_geoip2_country.dca_tables%'
         public: true
 
     Terminal42\Geoip2CountryBundle\CountryProvider:

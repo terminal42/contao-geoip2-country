@@ -10,6 +10,9 @@ use Doctrine\DBAL\Connection;
 
 class UppercaseCountryMigration extends AbstractMigration
 {
+    /**
+     * @param array<string> $supportedTables
+     */
     public function __construct(
         private readonly Connection $connection,
         private readonly array $supportedTables,

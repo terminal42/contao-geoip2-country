@@ -21,13 +21,13 @@ class CountryProvider implements ResetInterface
 
     private string|null $databasePath;
 
+    /**
+     * @var array<string, string>
+     */
     private array $requestCountries = [];
 
-    /**
-     * @param Reader|string|null $databasePath
-     */
     public function __construct(
-        $databasePath = null,
+        Reader|string|null $databasePath = null,
         private readonly string $fallbackCountry = 'XX',
     ) {
         if ($databasePath instanceof Reader) {

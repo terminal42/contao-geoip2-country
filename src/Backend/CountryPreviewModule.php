@@ -12,7 +12,6 @@ use Contao\Input;
 use Contao\MaintenanceModuleInterface;
 use Contao\SelectMenu;
 use Contao\Widget;
-use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
@@ -20,12 +19,10 @@ use Terminal42\Geoip2CountryBundle\CountryProvider;
 class CountryPreviewModule implements MaintenanceModuleInterface
 {
     public function __construct(
-        private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly Countries $countries,
         private readonly ContaoCsrfTokenManager $csrfTokenManager,
-        private readonly array $supportedTables,
     ) {
     }
 
@@ -59,25 +56,6 @@ class CountryPreviewModule implements MaintenanceModuleInterface
         $template->widget = $widget;
 
         return $template->parse();
-    }
-
-    private function getUsedCountries(): array
-    {
-        $queries = [];
-
-        foreach ($this->supportedTables as $table) {
-            $queries[] = "SELECT geoip_countries FROM $table WHERE geoip_visibility='show' OR geoip_visibility='hide'";
-        }
-
-        $countries = $this->connection->executeQuery(
-            'SELECT GROUP_CONCAT(geoip_countries) FROM ('.implode(' UNION ', $queries).') AS result',
-        )->fetchOne();
-
-        if (!$countries) {
-            return [];
-        }
-
-        return array_values(array_filter(array_unique(explode(',', (string) $countries))));
     }
 
     private function generateWidget(string|null $current): Widget

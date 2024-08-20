@@ -14,6 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DcaLoaderListener
 {
+    /**
+     * @param array<string> $supportedTables
+     */
     public function __construct(
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
@@ -186,7 +189,11 @@ class DcaLoaderListener
         };
     }
 
-    private function callPrevious(mixed $previous, array $arguments): mixed
+    /**
+     * @param array{0: string, 1: string}|callable|null $previous
+     * @param array<mixed>                              $arguments
+     */
+    private function callPrevious(array|callable|null $previous, array $arguments): mixed
     {
         if (\is_array($previous)) {
             return System::importStatic($previous[0])->{$previous[1]}(...$arguments);
@@ -199,6 +206,9 @@ class DcaLoaderListener
         return null;
     }
 
+    /**
+     * @param array<string|int, mixed> $row
+     */
     private function generateFlags(array $row): string
     {
         if (!$this->hasVisibility($row)) {
@@ -208,14 +218,14 @@ class DcaLoaderListener
         $countries = explode(',', (string) $row['geoip_countries']);
         $color = 'show' === $row['geoip_visibility'] ? '#b2f986' : '#ff89bf';
 
-        $buffer = sprintf(
+        $buffer = \sprintf(
             '<span style="order:3"><span style="all:unset;display:inline-flex;margin-left:5px;padding:3px 2px;vertical-align:middle;background:%s;border-radius:2px;" title="%s">',
             $color,
             $this->getLabelForCountries($row['geoip_visibility'], $countries),
         );
 
         foreach ($countries as $country) {
-            $buffer .= sprintf(
+            $buffer .= \sprintf(
                 '<img style="all:unset;display:block;height:14px;padding:0 2px" src="bundles/terminal42geoip2country/flags/%s.svg" alt="" height="14">',
                 strtolower($country),
             );
@@ -224,11 +234,17 @@ class DcaLoaderListener
         return $buffer.'</span></span>';
     }
 
+    /**
+     * @param array<string|int, mixed> $row
+     */
     private function hasVisibility(array $row): bool
     {
         return isset($row['geoip_visibility']) && ('show' === $row['geoip_visibility'] || 'hide' === $row['geoip_visibility']);
     }
 
+    /**
+     * @param array<int, string> $countries
+     */
     private function getLabelForCountries(string $visibility, array $countries): string
     {
         return $this->translator->trans(
