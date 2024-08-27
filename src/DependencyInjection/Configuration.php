@@ -9,6 +9,16 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
+    /**
+     * @var array<string>
+     */
+    private static array $defaultTables = ['tl_content', 'tl_article', 'tl_module', 'tl_page'];
+
+    public static function addDefaultTable(string $table): void
+    {
+        self::$defaultTables[] = $table;
+    }
+
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('terminal42_geoip2_country');
@@ -26,7 +36,7 @@ final class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('dca_tables')
                     ->scalarPrototype()->end()
-                    ->defaultValue(['tl_content', 'tl_article', 'tl_module', 'tl_page'])
+                    ->defaultValue(self::$defaultTables)
                     ->info('List of tables the DCA options should be applied to. Be aware that this might require additional permission checks if modified.')
                 ->end()
             ->end()
