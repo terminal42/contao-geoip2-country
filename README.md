@@ -31,6 +31,15 @@ need a commercial license of this product depending on your use case!
    set to the visitors country.
 
 
+### Note on page visibility
+
+If the visibility of a root page is configured, it also affects all its subpages. This means
+if a root page is not available for a country, none of the pages in this tree will be available.
+
+Enabling this on the fallback root page can lead to unwanted consequences, because the user will
+not be redirected to **any** page if none of the preferred languages match the browser!
+
+
 ## Installation
 
 Choose the installation method that matches your workflow!

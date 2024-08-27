@@ -18,6 +18,8 @@ class CountryRestrictionFilter implements RouteFilterInterface
 
     public function filter(RouteCollection $collection, Request $request): RouteCollection
     {
+        $country = $this->countryProvider->getCountryCode($request);
+
         foreach ($collection as $name => $route) {
             $pageModel = $route->getDefault('pageModel');
 
@@ -25,18 +27,31 @@ class CountryRestrictionFilter implements RouteFilterInterface
                 continue;
             }
 
-            if ('show' !== $pageModel->geoip_visibility && 'hide' !== $pageModel->geoip_visibility) {
-                continue;
+            if (!$this->isAvailable($pageModel, $country)) {
+                $collection->remove($name);
             }
 
-            $countries = explode(',', (string) $pageModel->geoip_countries);
-            $country = $this->countryProvider->getCountryCode($request);
+            // Disallow access to a page if its root page is not available for the current country
+            if ('root' !== $pageModel->type) {
+                $rootModel = PageModel::findById($pageModel->loadDetails()->rootId);
 
-            if (\in_array($country, $countries, true) !== ('show' === $pageModel->geoip_visibility)) {
-                $collection->remove($name);
+                if ($rootModel && !$this->isAvailable($rootModel, $country)) {
+                    $collection->remove($name);
+                }
             }
         }
 
         return $collection;
+    }
+
+    private function isAvailable(PageModel $pageModel, string $country): bool
+    {
+        if ('show' !== $pageModel->geoip_visibility && 'hide' !== $pageModel->geoip_visibility) {
+            return true;
+        }
+
+        $countries = explode(',', (string) $pageModel->geoip_countries);
+
+        return \in_array($country, $countries, true) === ('show' === $pageModel->geoip_visibility);
     }
 }
