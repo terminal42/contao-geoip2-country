@@ -78,7 +78,7 @@ class CountryProvider implements ResetInterface
             return;
         }
 
-        if ($request->headers->has(CacheHeaderSubscriber::HEADER_NAME)) {
+        if ($request->isFromTrustedProxy() && $request->headers->has(CacheHeaderSubscriber::HEADER_NAME)) {
             $response->setVary([CacheHeaderSubscriber::HEADER_NAME], false);
 
             return;
@@ -102,7 +102,7 @@ class CountryProvider implements ResetInterface
      */
     private function findCountryCode(Request $request): string
     {
-        if ($request->headers->has(CacheHeaderSubscriber::HEADER_NAME)) {
+        if ($request->isFromTrustedProxy() && $request->headers->has(CacheHeaderSubscriber::HEADER_NAME)) {
             return $request->headers->get(CacheHeaderSubscriber::HEADER_NAME);
         }
 
