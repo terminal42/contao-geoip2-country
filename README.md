@@ -15,18 +15,26 @@ need a commercial license of this product depending on your use case!
    By default, visibility for pages, articles, content elements and front end modules can be set for the country.
    For each content, you can either show only to or hide it from a list of countries.
 
-2. **Symfony HTTP Reverse Proxy**<br>
+
+2. **Root page routing based on the user country**<br>
+   GeoIP routing in the page tree allows you to define what root page a visitor will be redirected
+   to based on their country.
+
+
+3. **Symfony HTTP Reverse Proxy**<br>
    Integrated support for the Symfony HTTP Reverse Proxy allows a page to be cached
    for each country by using `Vary` headers. Without a supported reverse proxy, responses with
    country-specific content are automatically set to `Cache-Control: private`.
 
    This will be automatically configured for you in a Contao Managed Edition.
 
-3. **Default country for members**<br>
+
+4. **Default country for members**<br>
    The detected country is set as the default country for new members, so the registration front end module
    already has the country pre-selected.
 
-3. **Support for `terminal42/contao-countryselect`**<br>
+
+5. **Support for `terminal42/contao-countryselect`**<br>
    If the `countryselect` form field is added to a form, the default option is automatically
    set to the visitors country.
 
@@ -103,6 +111,25 @@ IPs change all the time. We recommend to use [MaxMind's Automatic Update Support
 to keep your database up-to-date.
 
 
+## GeoIP Routing
+
+GeoIP Routing is a powerful feature to define which root page / language a visitor will see,
+overriding the default language routing of Contao. This is mostly useful if you have
+country-specific websites, but the default browser language matching is unreliable.
+
+As an example, you might have root pages for "de", "en" and "de-CH". You want visitors from Switzerland
+to prefer "de-CH" over "de", but otherwise keep the Contao routing.
+
+Using _GeoIP2 Routing_, add a configuration for Switzerland, and select the "de-CH" root page. If you still
+want to allow english browsers to receive the "en" page, also select that one. Order the pages so the fallback
+(the one that will be serverd to e.g. french visitors) is at the top.
+
+If you do not define any other rule, Swiss visitors will receive the configured page,
+the rest of the world will receive one of the tree root pages depending on their browser.
+If you want to prevent the rest of the world from receiving the "de-CH" page, add a _Fallback_ routing
+for "de" and "en" only.
+
+
 ## Access the current user country
 
 To retrieve the current country in your own code, inject the `Terminal42\Geoip2CountryBundle\CountryProvider` service
@@ -139,12 +166,6 @@ class FooController extends AbstractFrontendModuleController
     }
 }
 ```
-
-
-## Thanks!
-
-Thanks to Burki & Scherer AG ([@Tsarma](https://github.com/tsarma)) for the original implementation and supporting the
-development.
 
 
 ## License

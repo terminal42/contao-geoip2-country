@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file source-language="en">
+        <body>
+            <trans-unit id="tl_page.geoip_routing.0">
+                <source>GeoIP Routing</source>
+            </trans-unit>
+            <trans-unit id="tl_page.geoip_routing.1">
+                <source>Configure routing based on GeoIP detection.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
