@@ -1,3 +1,6 @@
+parameters:
+    env(GEOIP2_AUTH): ~
+
 services:
     _defaults:
         autoconfigure: true
@@ -11,12 +14,26 @@ services:
             - '@contao.csrf.token_manager'
         public: true
 
+    Terminal42\Geoip2CountryBundle\Command\DatabaseUpdateCommand:
+        arguments:
+            - '@Terminal42\Geoip2CountryBundle\DatabaseUpdater'
+
     Terminal42\Geoip2CountryBundle\CountryProvider:
         arguments:
             - ~
             - '%terminal42_geoip2_country.fallback_country%'
         tags:
             - { name: kernel.reset, method: reset }
+
+    Terminal42\Geoip2CountryBundle\DatabaseUpdater:
+        arguments:
+            - '@http_client'
+            - '@filesystem'
+            - ''
+            - ~
+            - '@?logger'
+        tags:
+            - { name: monolog.logger, channel: contao.cron }
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
         arguments:

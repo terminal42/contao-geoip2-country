@@ -39,6 +39,13 @@ final class Configuration implements ConfigurationInterface
                     ->defaultValue(self::$defaultTables)
                     ->info('List of tables the DCA options should be applied to. Be aware that this might require additional permission checks if modified.')
                 ->end()
+                ->scalarNode('update_credentials')
+                    ->defaultValue('%env(GEOIP2_AUTH)%')
+                    ->info('MaxMind account ID and license key for GeoIP2-Country update, separated by colon (e.g. "1235:my-key").')
+                ->end()
+                ->scalarNode('update_interval')
+                    ->defaultValue('weekly')
+                    ->info('How often the database should be updated automatically. Enter an Contao interval (e.g. daily/weekly) or crontab like "30 1 * * 6,3").')
             ->end()
         ;
 
