@@ -54,6 +54,18 @@ services:
         tags:
             - { name: contao.hook, hook: parseTemplate }
 
+    Terminal42\Geoip2CountryBundle\EventListener\PageRoutingDataContainerListener:
+        arguments:
+            - '@database_connection'
+            - '@contao.intl.countries'
+            - '@translator'
+            - '@security.authorization_checker'
+        tags:
+            - { name: contao.callback, table: tl_page, target: config.onload, method: addGlobalOperation }
+            - { name: contao.callback, table: tl_page_geoip, target: list.label.label, method: generateLabel }
+            - { name: contao.callback, table: tl_page_geoip, target: fields.country.options, method: getCountryOptions }
+            - { name: contao.callback, table: tl_page_geoip, target: fields.pages.options, method: getPagesOptions }
+
     Terminal42\Geoip2CountryBundle\EventListener\VisibleElementListener:
         arguments:
             - '@Terminal42\Geoip2CountryBundle\CountryProvider'
@@ -71,4 +83,9 @@ services:
 
     Terminal42\Geoip2CountryBundle\Routing\CountryRestrictionFilter:
         arguments:
+            - '@Terminal42\Geoip2CountryBundle\CountryProvider'
+
+    Terminal42\Geoip2CountryBundle\Routing\CountryRoutingFilter:
+        arguments:
+            - '@database_connection'
             - '@Terminal42\Geoip2CountryBundle\CountryProvider'

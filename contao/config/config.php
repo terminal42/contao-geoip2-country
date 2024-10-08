@@ -9,3 +9,9 @@ if (false !== ($pos = array_search(PurgeData::class, array_values($GLOBALS['TL_M
 } else {
     $GLOBALS['TL_MAINTENANCE'][] = CountryPreviewModule::class;
 }
+
+if (isset($GLOBALS['BE_MOD']['content']['page'])) {
+    $GLOBALS['BE_MOD']['content']['page']['tables'][] = 'tl_page_geoip';
+} else {
+    $GLOBALS['BE_MOD']['design']['page']['tables'][] = 'tl_page_geoip';
+}
