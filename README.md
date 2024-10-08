@@ -39,6 +39,10 @@ need a commercial license of this product depending on your use case!
    set to the visitors country.
 
 
+6. **Automatic update of GeoIP2-Country database**<br>
+   Using the Contao cron scheduler, if you configure the necessary API credentials.
+
+
 ### Note on page visibility
 
 If the visibility of a root page is configured, it also affects all its subpages. This means
@@ -88,9 +92,11 @@ Install the binary MMDB file and configure its path in the `GEOIP2_DATABASE` env
 **Default configuration:**
 ```yaml
 terminal42_geoip2_country:
-    database_path: %env(GEOIP2_DATABASE)%
+    database_path: '%env(GEOIP2_DATABASE)%'
     fallback_country: XX
     dca_tables: [tl_content, tl_article, tl_module, tl_page]
+    credentials: '%env(GEOIP2_AUTH)%'
+    update_interval: weekly
 ```
 
 - **database_path:** Path to the MMDB file. Defaults to the `GEOIP2_DATABASE` environment variable.
@@ -103,12 +109,22 @@ terminal42_geoip2_country:
 - **dca_tables:** configures which elements allow the country restrictions. Changing this will add the DCA fields to the
     given table(s), but for any but the default tables you will need to implement your own visibility checks!
 
+- **update_credentials:** Required for automatic update of the GeoIP2-Country database.
+    Defaults to the `GEOIP2_AUTH` environment variable. Use your MaxMind account ID and license key in
+    basic-authentication format, e.g. "1234:your-key".
+
+- **update_interval:** How often the database will be updated automatically, if you add the necessary
+    `update_credentials`. Defaults to "weekly". Can also be set to an empty value if you want to manually
+    update using the Contao console `geoip2:database-update` command.
+
 
 ## Updating the MaxMind GeoIP2 database
 
 Detecting the country from IP requires an up-to-date information source, as
-IPs change all the time. We recommend to use [MaxMind's Automatic Update Support](https://dev.maxmind.com/geoip/geoipupdate/)
-to keep your database up-to-date.
+IPs change all the time. If you configure the credentials or `GEOIP2_AUTH` variable,
+this extension can automatically update the database for you.
+
+You can also use [MaxMind's Automatic Update Support](https://dev.maxmind.com/geoip/geoipupdate/) to keep your database up-to-date.
 
 
 ## GeoIP Routing
