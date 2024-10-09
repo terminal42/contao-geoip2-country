@@ -31,6 +31,9 @@ services:
             - '@filesystem'
             - ''
             - ~
+            - '@?logger'
+        tags:
+            - { name: monolog.logger, channel: contao.cron }
 
     Terminal42\Geoip2CountryBundle\EventListener\FormCountrySelectListener:
         arguments:

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DatabaseUpdater
@@ -23,6 +23,7 @@ class DatabaseUpdater
         private readonly Filesystem $filesystem,
         #[\SensitiveParameter] private readonly string $credentials,
         string|null $databasePath = null,
+        private readonly LoggerInterface|null $logger = null,
     ) {
         $this->databasePath = $databasePath ?? $_SERVER['GEOIP2_DATABASE'] ?? null;
     }
@@ -53,10 +54,12 @@ class DatabaseUpdater
 
         foreach ($finder as $file) {
             $this->filesystem->rename($file->getPathname(), $this->databasePath, true);
-            $this->filesystem->touch($this->databasePath, (int) $lastModified->format('U'));
         }
 
+        $this->filesystem->touch($this->databasePath, (int) $lastModified->format('U'));
         $this->filesystem->remove($extractFolder);
+
+        $this->logger?->info(basename($this->databasePath).' has been updated to version '.$lastModified->format('Y-m-d'));
     }
 
     private function needsUpdate(): bool
