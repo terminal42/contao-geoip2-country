@@ -52,7 +52,7 @@ class PageRoutingDataContainerListener
      *
      * @return array<int, string>
      */
-    public function generateLabel(array $row, string $value, DC_Table $dc, array $args): array
+    public function generateLabel(array $row, string $label, DC_Table $dc, array $args): array
     {
         foreach ($GLOBALS['TL_DCA']['tl_page_geoip']['list']['label']['fields'] as $k => $field) {
             switch ($field) {
@@ -61,7 +61,7 @@ class PageRoutingDataContainerListener
                     break;
 
                 case 'pages':
-                    $args[$k] = implode('<br>', array_map(fn (int|string $id) => $this->getPagesOptions()[$id], explode(',', (string) $args[$k])));
+                    $args[$k] = implode('<br>', array_map(fn (int|string $id) => $this->getPagesOptions()[$id] ?? '', explode(',', (string) $args[$k])));
                     break;
             }
         }
