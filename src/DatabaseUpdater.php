@@ -46,6 +46,12 @@ class DatabaseUpdater
             throw new \RuntimeException('SHA256 does not match.');
         }
 
+        // Restore the Phar stream wrapper that is disabled by Contao for security reasons
+        // (see https://github.com/contao/contao/pull/105)
+        if (!\in_array('phar', stream_get_wrappers(), true)) {
+            stream_wrapper_restore('phar');
+        }
+
         $phar = new \PharData($temp);
         $phar->extractTo(\dirname($this->databasePath), null, true);
 
