@@ -174,7 +174,7 @@ class FooController extends AbstractFrontendModuleController
     public function getResponse(FragmentTemplate $template, ModuleModel $model, Request $request): Response
     {
         // Only show content to Switzerland
-        if ('CH' !== $this->countryProvider->getCurrentCountry($request)) {
+        if ('CH' !== $this->countryProvider->getCountryCode($request)) {
             return new Response();
         }
 
