@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Widget;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
+#[AsHook('loadFormField')]
 class FormCountrySelectListener
 {
     public function __construct(

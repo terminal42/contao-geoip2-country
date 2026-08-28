@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Terminal42\Geoip2CountryBundle\DependencyInjection\Compiler;
+namespace Terminal42\Geoip2CountryBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

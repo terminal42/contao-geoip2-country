@@ -1,0 +1,28 @@
+{% trans_default_domain 'contao_tl_maintenance' %}
+<div id="tl_geoip2_country" class="maintenance_inactive">
+
+    <h2 class="sub_headline sub_headline_index">{{ 'tl_maintenance.geoip2_switch'|trans }}</h2>
+
+    <form class="tl_form" method="post">
+        <div class="tl_formbody_edit">
+            <input type="hidden" name="FORM_SUBMIT" value="geoip2_switch">
+            <input type="hidden" name="REQUEST_TOKEN" value="{{ contao.request_token }}">
+
+            <fieldset class="tl_box">
+                <div class="w50 widget">
+                    {{ widget|raw }}
+
+                    {% if not has_errors %}
+                        <p class="tl_help tl_tip">
+                            {{ 'tl_maintenance.geoip2_country.1'|trans }}
+                        </p>
+                    {% endif %}
+                </div>
+            </fieldset>
+        </div>
+        <div class="tl_submit_container">
+            <button type="submit" class="tl_submit">{{ 'MSC.apply'|trans([], 'contao_default') }}</button>
+        </div>
+    </form>
+
+</div>

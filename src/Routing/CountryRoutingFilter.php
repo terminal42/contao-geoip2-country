@@ -55,7 +55,7 @@ class CountryRoutingFilter implements RouteFilterInterface
             [$country],
         );
 
-        return $result ? array_map('intval', explode(',', (string) $result)) : null;
+        return $result ? array_map(intval(...), explode(',', (string) $result)) : null;
     }
 
     private function isRootRoute(string $name, Route $route): bool

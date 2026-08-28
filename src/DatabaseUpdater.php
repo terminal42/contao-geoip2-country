@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+#[WithMonologChannel('contao.cron')]
 class DatabaseUpdater
 {
-    private const DATABASE_URL = 'https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz';
+    private const string DATABASE_URL = 'https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz';
 
-    private const SHA256_URL = 'https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz.sha256';
-
-    private readonly string|null $databasePath;
+    private const string SHA256_URL = 'https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz.sha256';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly Filesystem $filesystem,
         #[\SensitiveParameter] private readonly string $credentials,
-        string|null $databasePath = null,
+        #[Autowire(param: 'terminal42_geoip2_country.database_path')] private readonly string|null $databasePath = null,
         private readonly LoggerInterface|null $logger = null,
     ) {
-        $this->databasePath = $databasePath ?? $_SERVER['GEOIP2_DATABASE'] ?? null;
     }
 
     public function update(): void

@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Intl\Countries;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[AsHook('loadDataContainer')]
 class DcaLoaderListener
 {
     /**
@@ -21,7 +24,7 @@ class DcaLoaderListener
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
         private readonly Countries $countries,
-        private readonly array $supportedTables,
+        #[Autowire(param: 'terminal42_geoip2_country.dca_tables')] private readonly array $supportedTables,
     ) {
     }
 
@@ -64,7 +67,6 @@ class DcaLoaderListener
         $GLOBALS['TL_DCA'][$table]['subpalettes']['geoip_visibility_hide'] = 'geoip_countries';
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_visibility'] = [
-            'exclude' => true,
             'inputType' => 'radio',
             'options' => ['none', 'show', 'hide'],
             'reference' => &$GLOBALS['TL_LANG']['MSC']['geoip_visibility'],
@@ -76,9 +78,8 @@ class DcaLoaderListener
         ];
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_countries'] = [
-            'exclude' => true,
             'inputType' => 'select',
-            'options_callback' => fn () => $this->countries->getCountries(),
+            'options_callback' => $this->countries->getCountries(...),
             'eval' => [
                 'includeBlankOption' => true,
                 'mandatory' => true,

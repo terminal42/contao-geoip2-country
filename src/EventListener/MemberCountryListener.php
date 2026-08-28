@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
+#[AsHook('loadDataContainer')]
 class MemberCountryListener
 {
     public function __construct(

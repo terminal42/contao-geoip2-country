@@ -8,6 +8,7 @@ use Contao\CoreBundle\EventListener\MakeResponsePrivateListener;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
 use MaxMind\Db\Reader\InvalidDatabaseException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Service\ResetInterface;
@@ -15,7 +16,7 @@ use Terminal42\Geoip2CountryBundle\HttpKernel\CacheHeaderSubscriber;
 
 class CountryProvider implements ResetInterface
 {
-    final public const SESSION_KEY = 'geoip2_country';
+    final public const string SESSION_KEY = 'geoip2_country';
 
     private Reader|null $reader = null;
 
@@ -27,8 +28,8 @@ class CountryProvider implements ResetInterface
     private array $requestCountries = [];
 
     public function __construct(
-        Reader|string|null $databasePath = null,
-        private readonly string $fallbackCountry = 'XX',
+        #[Autowire(param: 'terminal42_geoip2_country.database_path')] Reader|string|null $databasePath = null,
+        #[Autowire(param: 'terminal42_geoip2_country.fallback_country')] private readonly string $fallbackCountry = 'XX',
     ) {
         if ($databasePath instanceof Reader) {
             $this->reader = $databasePath;

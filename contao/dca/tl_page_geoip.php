@@ -26,29 +26,6 @@ $GLOBALS['TL_DCA']['tl_page_geoip'] = [
             'fields' => ['country', 'pages'],
             'showColumns' => true,
         ],
-        'operations' => [
-            'edit' => [
-                'href' => 'act=edit',
-                'icon' => 'edit.svg',
-            ],
-            'copy' => [
-                'href' => 'act=copy',
-                'icon' => 'copy.svg',
-            ],
-            'delete' => [
-                'href' => 'act=delete',
-                'icon' => 'delete.svg',
-                'attributes' => 'onclick="if(!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null).'\'))return false;Backend.getScrollOffset()"',
-            ],
-            'toggle' => [
-                'href' => 'act=toggle&amp;field=published',
-                'icon' => 'visible.svg',
-            ],
-            'show' => [
-                'href' => 'act=show',
-                'icon' => 'show.svg',
-            ],
-        ],
     ],
     'palettes' => [
         'default' => '{routing_legend},country,pages;{publish_legend},published',
@@ -61,7 +38,6 @@ $GLOBALS['TL_DCA']['tl_page_geoip'] = [
             'sql' => 'int(10) unsigned NOT NULL default 0',
         ],
         'country' => [
-            'exclude' => true,
             'inputType' => 'select',
             'eval' => [
                 'unique' => true,
@@ -71,7 +47,6 @@ $GLOBALS['TL_DCA']['tl_page_geoip'] = [
             'sql' => ['type' => 'string', 'length' => 2, 'notnull' => false],
         ],
         'pages' => [
-            'exclude' => true,
             'inputType' => 'checkboxWizard',
             'eval' => [
                 'mandatory' => true,

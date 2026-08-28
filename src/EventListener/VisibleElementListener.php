@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
+#[AsHook('isVisibleElement')]
 class VisibleElementListener
 {
     public function __construct(

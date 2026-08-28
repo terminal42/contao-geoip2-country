@@ -7,6 +7,7 @@ namespace Terminal42\Geoip2CountryBundle\Migration;
 use Contao\CoreBundle\Migration\AbstractMigration;
 use Contao\CoreBundle\Migration\MigrationResult;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class UppercaseCountryMigration extends AbstractMigration
 {
@@ -15,7 +16,7 @@ class UppercaseCountryMigration extends AbstractMigration
      */
     public function __construct(
         private readonly Connection $connection,
-        private readonly array $supportedTables,
+        #[Autowire(param: 'terminal42_geoip2_country.dca_tables')] private readonly array $supportedTables,
     ) {
     }
 
@@ -24,13 +25,11 @@ class UppercaseCountryMigration extends AbstractMigration
         $schemaManager = $this->connection->createSchemaManager();
 
         foreach ($this->supportedTables as $table) {
-            if (!$schemaManager->tablesExist($table)) {
+            if (!$schemaManager->tableExists($table)) {
                 continue;
             }
 
-            $columns = $schemaManager->listTableColumns($table);
-
-            if (!\array_key_exists('geoip_countries', $columns)) {
+            if (!$schemaManager->introspectTableByUnquotedName($table)->hasColumn('geoip_countries')) {
                 continue;
             }
 
@@ -47,13 +46,11 @@ class UppercaseCountryMigration extends AbstractMigration
         $schemaManager = $this->connection->createSchemaManager();
 
         foreach ($this->supportedTables as $table) {
-            if (!$schemaManager->tablesExist($table)) {
+            if (!$schemaManager->tableExists($table)) {
                 continue;
             }
 
-            $columns = $schemaManager->listTableColumns($table);
-
-            if (!\array_key_exists('geoip_countries', $columns)) {
+            if (!$schemaManager->introspectTableByUnquotedName($table)->hasColumn('geoip_countries')) {
                 continue;
             }
 

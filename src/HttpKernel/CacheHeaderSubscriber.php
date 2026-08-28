@@ -8,30 +8,18 @@ use FOS\HttpCache\SymfonyCache\CacheEvent;
 use FOS\HttpCache\SymfonyCache\Events;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+#[Exclude]
 class CacheHeaderSubscriber implements EventSubscriberInterface
 {
-    final public const HEADER_NAME = 'GeoIP2-Country';
+    final public const string HEADER_NAME = 'GeoIP2-Country';
 
     private Reader|null $reader = null;
 
-    private readonly string|null $databasePath;
-
-    /**
-     * @param Reader|string $databasePath
-     */
-    public function __construct($databasePath)
+    public function __construct(private readonly string|null $databasePath)
     {
-        if ($databasePath instanceof Reader) {
-            $this->reader = $databasePath;
-            $this->databasePath = null;
-            trigger_deprecation('terminal42/contao-geoip2-country', '1.3', 'Passing Reader to '.self::class.' constructor is deprecated, pass the database path instead.');
-
-            return;
-        }
-
-        $this->databasePath = $databasePath;
     }
 
     public function __invoke(CacheEvent $event): void

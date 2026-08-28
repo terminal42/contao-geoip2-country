@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\Backend;
 
-use Contao\BackendTemplate;
 use Contao\Controller;
-use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Intl\Countries;
 use Contao\Input;
 use Contao\MaintenanceModuleInterface;
 use Contao\SelectMenu;
 use Contao\Widget;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
+use Twig\Environment;
 
+#[Autoconfigure(public: true)]
 class CountryPreviewModule implements MaintenanceModuleInterface
 {
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly Countries $countries,
-        private readonly ContaoCsrfTokenManager $csrfTokenManager,
+        private readonly Environment $twig,
     ) {
     }
 
@@ -51,11 +52,10 @@ class CountryPreviewModule implements MaintenanceModuleInterface
             }
         }
 
-        $template = new BackendTemplate('be_geoip2_switch');
-        $template->requestToken = $this->csrfTokenManager->getDefaultTokenValue();
-        $template->widget = $widget;
-
-        return $template->parse();
+        return $this->twig->render('@Contao/backend/geoip2_switch.html.twig', [
+            'widget' => $widget->parse(),
+            'has_errors' => $widget->hasErrors(),
+        ]);
     }
 
     private function generateWidget(string|null $current): Widget

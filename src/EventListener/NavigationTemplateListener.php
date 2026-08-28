@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Terminal42\Geoip2CountryBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Terminal42\Geoip2CountryBundle\CountryProvider;
 
+#[AsHook('parseTemplate')]
 class NavigationTemplateListener
 {
     public function __construct(
@@ -31,9 +33,7 @@ class NavigationTemplateListener
                 continue;
             }
 
-            if (null === $country) {
-                $country = $this->countryProvider->getCountryCode($this->requestStack->getMainRequest());
-            }
+            $country ??= $this->countryProvider->getCountryCode($this->requestStack->getMainRequest());
 
             $countries = explode(',', (string) ($item['geoip_countries'] ?? ''));
 
