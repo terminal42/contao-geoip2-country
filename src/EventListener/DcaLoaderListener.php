@@ -79,7 +79,8 @@ class DcaLoaderListener
 
         $GLOBALS['TL_DCA'][$table]['fields']['geoip_countries'] = [
             'inputType' => 'select',
-            'options_callback' => $this->countries->getCountries(...),
+            // Do not use first class callable because it would forward invalid arguments to the getCountries method
+            'options_callback' => fn ($dc) => $this->countries->getCountries(),
             'eval' => [
                 'includeBlankOption' => true,
                 'mandatory' => true,
